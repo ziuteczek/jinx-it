@@ -8,6 +8,7 @@
 
 typedef enum walkingDirection
 {
+    DIRECTION_NONE,
     DIRECTION_TOP,
     DIRECTION_RIGHT,
     DIRECTION_LEFT,

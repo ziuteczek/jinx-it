@@ -2,8 +2,8 @@
 #define GAME_H
 typedef struct playerStruct
 {
-    int x;
-    int y;
+    float x;
+    float y;
 
     //Player speed expressed in px per second
     int speed;

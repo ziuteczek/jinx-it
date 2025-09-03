@@ -17,15 +17,15 @@ typedef enum keyType
 } keyType;
 
 /*
-* KEY_DOWN - Key is pressed
-* KEY_UP - Key has been released 1 frame ago.
-* KEY_OFF _ Key is not pressed
-*/
+ * KEY_DOWN - Key is pressed
+ * KEY_UP - Key has been released 1 frame ago.
+ * KEY_OFF _ Key is not pressed
+ */
 typedef enum keyPressState
 {
+    KEY_OFF,
     KEY_DOWN,
-    KEY_UP,
-    KEY_OFF
+    KEY_UP
 } keyPressState;
 
 typedef struct eventNode

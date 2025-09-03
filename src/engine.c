@@ -28,7 +28,7 @@ bool Launch(SDL_Window **window, SDL_Renderer **renderer)
         return false;
     }
 
-    *renderer = SDL_CreateRenderer(*window, NULL);
+    *renderer = SDL_CreateRenderer(*window, SDL_RENDERER_VSYNC_DISABLED);
 
     if (*renderer == NULL)
     {

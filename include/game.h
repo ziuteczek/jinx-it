@@ -1,8 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
-typedef struct player
+typedef struct playerStruct
 {
     int x;
     int y;
-} player;
+} playerStruct;
 #endif

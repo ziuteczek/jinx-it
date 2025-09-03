@@ -6,5 +6,5 @@
 #include "engine.h"
 #include "render.h"
 
-void update(bool keyPress[KEYS_TOTAL], renderDataStruct *renderData);
+void update(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData);
 #endif

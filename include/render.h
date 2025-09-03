@@ -15,6 +15,8 @@ typedef struct renderDataStruct
     Uint64 renderTime;
     Uint64 deltaTime;
 
+    playerStruct player;
+
     bool exit;
 } renderDataStruct;
 

@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
   renderDataStruct renderData = getDefaultRenderData(window, renderer);
 
-  bool keyPress[KEYS_TOTAL] = {};
+  keyPressState keyPress[KEYS_TOTAL] = {};
 
   while (!renderData.exit)
   {

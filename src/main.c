@@ -23,6 +23,8 @@ int main(int argc, char **argv)
 
   renderDataStruct renderData = getDefaultRenderData(window, renderer);
 
+  renderData.player.speed = 100;
+
   keyPressState keyPress[KEYS_TOTAL] = {};
 
   while (!renderData.exit)

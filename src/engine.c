@@ -9,7 +9,7 @@
  * Initializes SDL, window and renderer
  * @returns true on succes, false on failure
  */
-bool Launch(SDL_Window **window, SDL_Renderer **renderer)
+bool launch(SDL_Window **window, SDL_Renderer **renderer)
 {
     bool sdlInitializationSucces = SDL_Init(SDL_INIT_VIDEO);
     if (!sdlInitializationSucces)
@@ -36,18 +36,15 @@ bool Launch(SDL_Window **window, SDL_Renderer **renderer)
         debug("%s", SDL_GetError());
         return false;
     }
-    debug("SDL Launch succes");
+    debug("SDL launch succes");
 
     return true;
 }
-void _handleKeyClick(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL]);
-void _keyPressReset(keyPressState keyPress[KEYS_TOTAL]);
+void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL]);
 
-void getInput(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData)
+void get_input(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData)
 {
     SDL_Event event;
-
-    _keyPressReset(keyPress);
 
     while (SDL_PollEvent(&event))
     {
@@ -57,7 +54,7 @@ void getInput(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData)
         case SDL_EVENT_KEY_UP:
         {
             bool isKeyDown = SDL_EVENT_KEY_DOWN == event.type;
-            _handleKeyClick(isKeyDown, event.key.key, keyPress);
+            _handle_key_click(isKeyDown, event.key.key, keyPress);
             debug("Key pressed: %s", SDL_GetKeyName(event.key.key));
             break;
         }
@@ -73,41 +70,30 @@ void getInput(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData)
     }
 }
 
-void _keyPressReset(keyPressState keyPress[KEYS_TOTAL])
-{
-    for (int i = 0; i < KEYS_TOTAL; i++)
-    {
-        if (keyPress[i] == KEY_UP)
-        {
-            keyPress[i] = KEY_OFF;
-        }
-    }
-}
-
-void _handleKeyClick(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL])
+void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL])
 {
     switch (key)
     {
-    case SDLK_W:
-        keyPress[KEY_W] = isKeyDown ? KEY_DOWN : KEY_UP;
+    case SDLK_UP:
+        keyPress[KEY_ARROW_UP] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
-    case SDLK_A:
-        keyPress[KEY_A] = isKeyDown ? KEY_DOWN : KEY_UP;
+    case SDLK_LEFT:
+        keyPress[KEY_ARROW_LEFT] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
-    case SDLK_S:
-        keyPress[KEY_S] = isKeyDown ? KEY_DOWN : KEY_UP;
+    case SDLK_DOWN:
+        keyPress[KEY_ARROW_DOWN] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
-    case SDLK_D:
-        keyPress[KEY_D] = isKeyDown ? KEY_DOWN : KEY_UP;
+    case SDLK_RIGHT:
+        keyPress[KEY_ARROW_RIGHT] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
     }
 }
 
-void Quit(SDL_Window *window, SDL_Renderer *renderer)
+void quit(SDL_Window *window, SDL_Renderer *renderer)
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
     SDL_Quit();
-    debug("SDL Quited");
+    debug("SDL quited");
 }

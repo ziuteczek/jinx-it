@@ -6,10 +6,6 @@
 
 void render(renderDataStruct *renderData)
 {
-    int windowWidth;
-    int windowHeight;
-    SDL_GetWindowSize(renderData->window, &windowWidth, &windowHeight);
-
     SDL_SetRenderDrawColor(renderData->renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderData->renderer);
 
@@ -22,7 +18,7 @@ void render(renderDataStruct *renderData)
 void refreshRenderDataStruct(renderDataStruct *renderData)
 {
 }
-renderDataStruct getDefaultRenderData(SDL_Window *window, SDL_Renderer *renderer)
+renderDataStruct get_default_render_data(SDL_Window *window, SDL_Renderer *renderer)
 {
     renderDataStruct renderData;
     renderData.renderer = renderer;

@@ -9,23 +9,21 @@
 
 typedef enum keyType
 {
-    KEY_W,
-    KEY_A,
-    KEY_S,
-    KEY_D,
+    KEY_ARROW_UP,
+    KEY_ARROW_RIGHT,
+    KEY_ARROW_DOWN,
+    KEY_ARROW_LEFT,
     KEYS_TOTAL
 } keyType;
 
 /*
- * KEY_DOWN - Key is pressed
- * KEY_UP - Key has been released 1 frame ago.
- * KEY_OFF _ Key is not pressed
+ * KEY_RIGHTOWN - Key is pressed
+ * KEY_UP - Key is not pressed
  */
 typedef enum keyPressState
 {
-    KEY_OFF,
-    KEY_DOWN,
-    KEY_UP
+    KEY_STATE_DOWN,
+    KEY_STATE_UP
 } keyPressState;
 
 typedef struct eventNode
@@ -34,8 +32,8 @@ typedef struct eventNode
     struct eventNode *next;
 } eventNode;
 
-bool Launch(SDL_Window **window, SDL_Renderer **renderer);
-void getInput(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData);
-void Quit(SDL_Window *window, SDL_Renderer *renderer);
+bool launch(SDL_Window **window, SDL_Renderer **renderer);
+void get_input(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData);
+void quit(SDL_Window *window, SDL_Renderer *renderer);
 
 #endif

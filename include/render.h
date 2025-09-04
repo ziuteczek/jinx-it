@@ -21,7 +21,7 @@ typedef struct renderDataStruct
 } renderDataStruct;
 
 void render(renderDataStruct *renderData);
-renderDataStruct getDefaultRenderData(SDL_Window *window, SDL_Renderer *renderer);
+renderDataStruct get_default_render_data(SDL_Window *window, SDL_Renderer *renderer);
 void refreshRenderDataStruct(renderDataStruct *renderData);
 
 #endif

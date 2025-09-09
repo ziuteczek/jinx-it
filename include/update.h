@@ -19,5 +19,5 @@ typedef enum walkingDirection
     DIRECTION_BOTTOM_LEFT,
 } walkingDirection;
 
-void update(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData);
+void update(inputDataStruct *input_data, renderDataStruct *renderData);
 #endif

@@ -1,6 +1,8 @@
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <stdbool.h>
 
+#include "debug.h"
 #include "engine.h"
 #include "render.h"
 #include "update.h"
@@ -10,29 +12,44 @@ int main(int argc, char **argv)
   SDL_Window *window;
   SDL_Renderer *renderer;
 
-  bool launchSucces = launch(&window, &renderer);
+  bool launch_succes = launch(&window, &renderer);
 
-  if (!launchSucces)
+  if (!launch_succes)
   {
     quit(window, renderer);
     return 1;
   }
 
   const float window_aspect_ratio = 16.0F / 9.0F;
-  SDL_SetWindowAspectRatio(window, window_aspect_ratio, window_aspect_ratio);
+  bool set_window_aspect_ratio_succes = SDL_SetWindowAspectRatio(window, window_aspect_ratio, window_aspect_ratio);
 
-  renderDataStruct renderData = get_default_render_data(window, renderer);
-
-  keyPressState keyPress[KEYS_TOTAL] = {};
-
-  while (!renderData.exit)
+  if (!set_window_aspect_ratio_succes)
   {
-    get_input(keyPress, &renderData);
-
-    update(keyPress, &renderData);
-
-    render(&renderData);
+    quit(window, renderer);
+    return 2;
   }
+
+  renderDataStruct render_data;
+  bool render_data_defaulting_succes = set_default_render_data(&render_data, window, renderer);
+
+  if (!render_data_defaulting_succes)
+  {
+    return 3;
+  }
+
+  inputDataStruct input_data;
+
+  while (!input_data.exit)
+  {
+    reset_data_struct(&input_data);
+
+    get_input(&input_data);
+    update(&input_data, &render_data);
+    render(&render_data);
+  }
+
+  SDL_DestroyTexture(render_data.textures[TEXTURE_MAP].data);
+  SDL_DestroyTexture(render_data.textures[TEXTURE_PLAYER].data);
 
   quit(window, renderer);
   return 0;

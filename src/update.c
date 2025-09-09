@@ -11,14 +11,28 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData);
 
-void update(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData)
+void update(inputDataStruct *input_data, renderDataStruct *renderData)
 {
+    if (input_data->resize)
+    {
+        SDL_GetWindowSize(renderData->window, &renderData->width, &renderData->height);
+    }
+
     Uint64 oldFrameRenderTime = renderData->renderTime;
 
     renderData->renderTime = SDL_GetTicks();
-    renderData->deltaTime = renderData->renderTime - oldFrameRenderTime;
 
-    if (false)
+    // Fix: Prevent huge deltaTime on first frame
+    if (oldFrameRenderTime == 0)
+    {
+        renderData->deltaTime = 0;
+    }
+    else
+    {
+        renderData->deltaTime = renderData->renderTime - oldFrameRenderTime;
+    }
+
+    if (true)
     {
         const float frameRate = 1000.0f / 240.0f;
 
@@ -28,9 +42,10 @@ void update(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData)
         }
     }
 
-    if (_any_key_pressed(key_press))
+    // Only handle movement if deltaTime > 0
+    if (_any_key_pressed(input_data->key_press) && renderData->deltaTime > 0)
     {
-        _handle_key_press(key_press, renderData);
+        _handle_key_press(input_data->key_press, renderData);
     }
 }
 
@@ -38,7 +53,7 @@ void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *re
 {
     walkingDirection playerDirection = _get_walking_direction(key_press);
 
-    // player speed expressed in pixels traveled every milisecond
+    // player speed expressed in pixels traveled every millisecond
     const float speed_ms = renderData->player.speed / 1000.0f;
 
     // number of pixels traveled by player
@@ -48,40 +63,43 @@ void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *re
     {
     case DIRECTION_RIGHT:
         renderData->player.x += pixels_moved;
-        return;
+        break;
     case DIRECTION_LEFT:
         renderData->player.x -= pixels_moved;
-        return;
+        break;
     case DIRECTION_TOP:
         renderData->player.y -= pixels_moved;
-        return;
+        break;
     case DIRECTION_BOTTOM:
         renderData->player.y += pixels_moved;
-        return;
-    }
-
-    pixels_moved /= sqrt(2.0f);
-
-    switch (playerDirection)
-    {
+        break;
     case DIRECTION_TOP_RIGHT:
+        pixels_moved /= sqrtf(2.0f);
         renderData->player.y -= pixels_moved;
         renderData->player.x += pixels_moved;
         break;
     case DIRECTION_TOP_LEFT:
+        pixels_moved /= sqrtf(2.0f);
         renderData->player.y -= pixels_moved;
         renderData->player.x -= pixels_moved;
         break;
     case DIRECTION_BOTTOM_RIGHT:
+        pixels_moved /= sqrtf(2.0f);
         renderData->player.y += pixels_moved;
         renderData->player.x += pixels_moved;
         break;
     case DIRECTION_BOTTOM_LEFT:
+        pixels_moved /= sqrtf(2.0f);
         renderData->player.y += pixels_moved;
         renderData->player.x -= pixels_moved;
         break;
+    case DIRECTION_NONE:
+    default:
+        // No movement
+        break;
     }
 }
+
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL])
 {
     for (int i = 0; i < KEYS_TOTAL; i++)
@@ -93,10 +111,11 @@ bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL])
     }
     return false;
 }
+
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 {
     bool up = key_press[KEY_ARROW_UP] == KEY_STATE_DOWN;
-    bool down = key_press[KEY_ARROW_UP] == KEY_STATE_DOWN;
+    bool down = key_press[KEY_ARROW_DOWN] == KEY_STATE_DOWN;
     bool left = key_press[KEY_ARROW_LEFT] == KEY_STATE_DOWN;
     bool right = key_press[KEY_ARROW_RIGHT] == KEY_STATE_DOWN;
 

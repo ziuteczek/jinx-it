@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/jinx.dir/src/engine.c.o CMakeFiles/jinx.dir/src/main.c.o CMakeFiles/jinx.dir/src/render.c.o CMakeFiles/jinx.dir/src/update.c.o -o jinx  -Wl,-rpath,/usr/local/lib /usr/local/lib/libSDL3_image.so.0.3.0 -lm /usr/local/lib/libSDL3.so.0.3.0 

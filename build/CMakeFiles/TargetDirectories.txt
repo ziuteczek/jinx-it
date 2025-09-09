@@ -1,0 +1,3 @@
+/workspaces/jinx-it/build/CMakeFiles/jinx.dir
+/workspaces/jinx-it/build/CMakeFiles/edit_cache.dir
+/workspaces/jinx-it/build/CMakeFiles/rebuild_cache.dir

@@ -4,8 +4,11 @@
 #include "config.h"
 #include <SDL3/SDL.h>
 #include <stdbool.h>
+
 #include "debug.h"
-#include "render.h"
+#include "texture.h"
+
+struct renderDataStruct; // FORWARD DECLARATION
 
 typedef enum keyType
 {
@@ -16,24 +19,45 @@ typedef enum keyType
     KEYS_TOTAL
 } keyType;
 
-/*
- * KEY_RIGHTOWN - Key is pressed
- * KEY_UP - Key is not pressed
- */
 typedef enum keyPressState
 {
-    KEY_STATE_DOWN,
-    KEY_STATE_UP
+    KEY_STATE_UP,
+    KEY_STATE_DOWN
 } keyPressState;
 
-typedef struct eventNode
+// typedef struct eventNode
+// {
+//     SDL_Event data;
+//     struct eventNode *next;
+// } eventNode;
+
+typedef enum mousePressState
 {
-    SDL_Event data;
-    struct eventNode *next;
-} eventNode;
+    MOUSE_STATE_UP,
+    MOUSE_STATE_DOWN
+} mousePressState;
+
+typedef enum mousePressState
+{
+    MOUSE_BUTTON_LEFT,
+    MOUSE_BUTTON_MIDDLE,
+    MOUSE_BUTTON_RIGHT,
+    MOUSE_BUTTONS_TOTAL
+} mousePressState;
+
+typedef struct inputDataStruct
+{
+    SDL_FPoint mouse_pos;
+
+    keyPressState key_press[KEYS_TOTAL];
+    mousePressState mouse_press[MOUSE_BUTTONS_TOTAL];
+
+    bool exit;
+} inputDataStruct;
 
 bool launch(SDL_Window **window, SDL_Renderer **renderer);
-void get_input(keyPressState keyPress[KEYS_TOTAL], renderDataStruct *renderData);
+void get_input(keyPressState keyPress[KEYS_TOTAL], struct renderDataStruct *renderData);
 void quit(SDL_Window *window, SDL_Renderer *renderer);
+gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path);
 
 #endif

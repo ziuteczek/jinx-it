@@ -1,8 +1,12 @@
 #ifndef RENDER_H
 #define RENDER_H
+
 #include <SDL3/SDL.h>
 #include <stdbool.h>
+
 #include "game.h"
+#include "engine.h"
+#include "texture.h"
 
 typedef struct renderDataStruct
 {
@@ -12,16 +16,20 @@ typedef struct renderDataStruct
     int width;
     int height;
 
+    float screenSizeRatio;
+
     Uint64 renderTime;
     Uint64 deltaTime;
 
     playerStruct player;
+
+    gameTexture textures[TEXTURES_TOTAL];
 
     bool exit;
 } renderDataStruct;
 
 void render(renderDataStruct *renderData);
 renderDataStruct get_default_render_data(SDL_Window *window, SDL_Renderer *renderer);
-void refreshRenderDataStruct(renderDataStruct *renderData);
+void refresh_render_data_struct(renderDataStruct *renderData);
 
 #endif

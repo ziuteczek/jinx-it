@@ -7,4 +7,7 @@
  */
 #define DEBUG 1
 
+#define BASIC_WIDTH 320
+#define BASIC_HEIGHT 180
+
 #endif

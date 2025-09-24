@@ -25,12 +25,6 @@ typedef enum keyPressState
     KEY_STATE_DOWN
 } keyPressState;
 
-// typedef struct eventNode
-// {
-//     SDL_Event data;
-//     struct eventNode *next;
-// } eventNode;
-
 typedef enum mousePressState
 {
     MOUSE_STATE_UP,
@@ -44,7 +38,16 @@ typedef enum mouseButtons
     MOUSE_BUTTON_RIGHT,
     MOUSE_BUTTONS_TOTAL
 } mouseButtons;
-
+/**
+ * Struct design to gather input data from user
+ *
+ * - mouse_pos: position of cursor {float x,float y}
+ * - key_press: stores information about selected keboard keys state
+ * - mouse_press: stores information about selected mouse buttons state
+ * 
+ * - resize: was window resized
+ * - exit: was game closed
+ */
 typedef struct inputDataStruct
 {
     SDL_FPoint mouse_pos;

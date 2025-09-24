@@ -68,3 +68,10 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
 
     return true;
 }
+void free_textures(renderDataStruct *render_data)
+{
+    for (int i = 0; i < TEXTURES_TOTAL; i++)
+    {
+        SDL_DestroyTexture(render_data->textures[i].data);
+    }
+}

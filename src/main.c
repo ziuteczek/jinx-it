@@ -41,15 +41,12 @@ int main(int argc, char **argv)
 
   while (!input_data.exit)
   {
-    reset_data_struct(&input_data);
-
     get_input(&input_data);
     update(&input_data, &render_data);
     render(&render_data);
   }
 
-  SDL_DestroyTexture(render_data.textures[TEXTURE_MAP].data);
-  SDL_DestroyTexture(render_data.textures[TEXTURE_PLAYER].data);
+  free_textures(&render_data);
 
   quit(window, renderer);
   return 0;

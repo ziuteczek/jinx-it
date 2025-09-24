@@ -46,9 +46,14 @@ bool launch(SDL_Window **window, SDL_Renderer **renderer)
 
 void _handle_event(SDL_Event event, inputDataStruct *input_data);
 
+/**
+ * Reads latest input from user. Keyboard (arrow keys), mouse (L,M,R buttons), program quit, window resize
+ */
 void get_input(inputDataStruct *input_data)
 {
     SDL_Event event;
+
+    reset_data_struct(&input_data);
 
     SDL_GetMouseState(&input_data->mouse_pos.x, &input_data->mouse_pos.y);
 
@@ -107,6 +112,17 @@ void _handle_mouse_click(SDL_Event *event, inputDataStruct *input_data)
     }
 }
 
+/**
+ * Loads a texture from a relative path and returns a gameTexture structure.
+ *
+ * @param renderer The current SDL renderer.
+ * @param path     Relative path to the texture file (from the game executable directory).
+ * @return         A gameTexture structure containing:
+ *                 - w:       Width of the texture.
+ *                 - h:       Height of the texture.
+ *                 - success: Whether the texture was successfully loaded.
+ *                 - data:    The actual texture data.
+ */
 gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path)
 {
     gameTexture texture = {};
@@ -168,9 +184,6 @@ void reset_data_struct(inputDataStruct *input_data)
     {
         input_data->key_press[i] = KEY_STATE_UP;
     }
-
-    input_data->mouse_pos.x = 0;
-    input_data->mouse_pos.y = 0;
 }
 
 void quit(SDL_Window *window, SDL_Renderer *renderer)

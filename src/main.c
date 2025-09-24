@@ -21,28 +21,32 @@ int main(int argc, char **argv)
   }
 
   const float window_aspect_ratio = 16.0F / 9.0F;
-  SDL_SetWindowAspectRatio(window, window_aspect_ratio, window_aspect_ratio);
+  bool set_window_aspect_ratio_succes = SDL_SetWindowAspectRatio(window, window_aspect_ratio, window_aspect_ratio);
 
-  renderDataStruct render_data = get_default_render_data(window, renderer);
-
-  keyPressState key_press[KEYS_TOTAL] = {};
-
-  
-  render_data.textures[TEXTURE_MAP] = get_texture_from_path(render_data.renderer, "../assets/map.png");
-  
-  render_data.textures[TEXTURE_PLAYER] = get_texture_from_path(render_data.renderer, "../assets/player.png");
-  
-
-  while (!render_data.exit)
+  if (!set_window_aspect_ratio_succes)
   {
-    get_input(key_press, &render_data);
+    quit(window, renderer);
+    return 2;
+  }
 
-    update(key_press, &render_data);
+  renderDataStruct render_data;
+  bool render_data_defaulting_succes = set_default_render_data(&render_data, window, renderer);
 
+  if (!render_data_defaulting_succes)
+  {
+    return 3;
+  }
+
+  inputDataStruct input_data;
+
+  while (!input_data.exit)
+  {
+    get_input(&input_data);
+    update(&input_data, &render_data);
     render(&render_data);
   }
 
-  SDL_DestroyTexture(render_data.textures[TEXTURE_MAP].data);
+  free_textures(&render_data);
 
   quit(window, renderer);
   return 0;

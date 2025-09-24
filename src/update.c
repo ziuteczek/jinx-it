@@ -11,16 +11,24 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData);
 
-void update(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData)
+void update(inputDataStruct *input_data, renderDataStruct *renderData)
 {
+    if (input_data->resize)
+    {
+        SDL_GetWindowSize(renderData->window, &renderData->width, &renderData->height);
+    }
+
     Uint64 oldFrameRenderTime = renderData->renderTime;
 
     renderData->renderTime = SDL_GetTicks();
 
     // Fix: Prevent huge deltaTime on first frame
-    if (oldFrameRenderTime == 0) {
+    if (oldFrameRenderTime == 0)
+    {
         renderData->deltaTime = 0;
-    } else {
+    }
+    else
+    {
         renderData->deltaTime = renderData->renderTime - oldFrameRenderTime;
     }
 
@@ -35,9 +43,9 @@ void update(keyPressState key_press[KEYS_TOTAL], renderDataStruct *renderData)
     }
 
     // Only handle movement if deltaTime > 0
-    if (_any_key_pressed(key_press) && renderData->deltaTime > 0)
+    if (_any_key_pressed(input_data->key_press) && renderData->deltaTime > 0)
     {
-        _handle_key_press(key_press, renderData);
+        _handle_key_press(input_data->key_press, renderData);
     }
 }
 
@@ -103,6 +111,7 @@ bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL])
     }
     return false;
 }
+
 
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 {

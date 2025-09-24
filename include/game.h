@@ -1,11 +1,19 @@
 #ifndef GAME_H
 #define GAME_H
+
+/**
+ * Struct to hold player sprite info
+ * 
+ * x - player x pos
+ * y - player y pos
+ * 
+ * speed - player speed expressed in pixels per seconds
+ */
 typedef struct playerStruct
 {
     float x;
     float y;
 
-    //Player speed expressed in px per second
     int speed;
 } playerStruct;
 #endif

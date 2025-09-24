@@ -25,26 +25,29 @@ typedef enum keyPressState
     KEY_STATE_DOWN
 } keyPressState;
 
-// typedef struct eventNode
-// {
-//     SDL_Event data;
-//     struct eventNode *next;
-// } eventNode;
-
 typedef enum mousePressState
 {
     MOUSE_STATE_UP,
     MOUSE_STATE_DOWN
 } mousePressState;
 
-typedef enum mousePressState
+typedef enum mouseButtons
 {
     MOUSE_BUTTON_LEFT,
     MOUSE_BUTTON_MIDDLE,
     MOUSE_BUTTON_RIGHT,
     MOUSE_BUTTONS_TOTAL
-} mousePressState;
-
+} mouseButtons;
+/**
+ * Struct design to gather input data from user
+ *
+ * - mouse_pos: position of cursor {float x,float y}
+ * - key_press: stores information about selected keboard keys state
+ * - mouse_press: stores information about selected mouse buttons state
+ * 
+ * - resize: was window resized
+ * - exit: was game closed
+ */
 typedef struct inputDataStruct
 {
     SDL_FPoint mouse_pos;
@@ -52,11 +55,13 @@ typedef struct inputDataStruct
     keyPressState key_press[KEYS_TOTAL];
     mousePressState mouse_press[MOUSE_BUTTONS_TOTAL];
 
+    bool resize;
     bool exit;
 } inputDataStruct;
 
 bool launch(SDL_Window **window, SDL_Renderer **renderer);
-void get_input(keyPressState keyPress[KEYS_TOTAL], struct renderDataStruct *renderData);
+void reset_data_struct(inputDataStruct *input_data);
+void get_input(inputDataStruct *input_data);
 void quit(SDL_Window *window, SDL_Renderer *renderer);
 gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path);
 

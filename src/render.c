@@ -32,23 +32,46 @@ void render(renderDataStruct *renderData)
 void refresh_render_data_struct(renderDataStruct *renderData)
 {
 }
-renderDataStruct get_default_render_data(SDL_Window *window, SDL_Renderer *renderer)
+bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, SDL_Renderer *renderer)
 {
-    renderDataStruct renderData;
-    renderData.renderer = renderer;
-    renderData.window = window;
-    renderData.exit = false;
+    render_data->renderer = renderer;
+    render_data->window = window;
 
-    renderData.player.x = 0;
-    renderData.player.y = 0;
-    renderData.deltaTime = 0;
-    renderData.renderTime = 0;
+    render_data->player.x = 0;
+    render_data->player.y = 0;
+    render_data->deltaTime = 0;
+    render_data->renderTime = 0;
 
-    renderData.player.speed = 750;
+    render_data->player.speed = 750;
 
-    SDL_GetWindowSize(window, &renderData.width, &renderData.height);
+    bool reading_window_size_succes = SDL_GetWindowSize(window, &render_data->width, &render_data->height);
 
-    renderData.screenSizeRatio = ((float)renderData.height / (float)BASIC_HEIGHT + (float)renderData.width / (float)BASIC_WIDTH) / 2.0f;
+    if (!reading_window_size_succes)
+    {
+        debug("Unsuccesfull while reading window size");
+        return false;
+    }
 
-    return renderData;
+    render_data->textures[TEXTURE_MAP] = get_texture_from_path(render_data->renderer, "../assets/map.png");
+    render_data->textures[TEXTURE_PLAYER] = get_texture_from_path(render_data->renderer, "../assets/player.png");
+
+    for (int i = 0; i < TEXTURES_TOTAL; i++)
+    {
+        if (!render_data->textures[i].success)
+        {
+            debug("Unsuccesfull while creating texture %d", i);
+            return false;
+        }
+    }
+
+    render_data->screenSizeRatio = ((float)render_data->height / (float)BASIC_HEIGHT + (float)render_data->width / (float)BASIC_WIDTH) / 2.0f;
+
+    return true;
+}
+void free_textures(renderDataStruct *render_data)
+{
+    for (int i = 0; i < TEXTURES_TOTAL; i++)
+    {
+        SDL_DestroyTexture(render_data->textures[i].data);
+    }
 }

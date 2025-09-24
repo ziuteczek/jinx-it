@@ -46,11 +46,17 @@ bool launch(SDL_Window **window, SDL_Renderer **renderer)
 
 void _handle_event(SDL_Event event, inputDataStruct *input_data);
 
-void get_input(inputDataStruct *input_data, renderDataStruct *renderData)
+/**
+ * Reads latest input from user. Keyboard (arrow keys), mouse (L,M,R buttons), program quit, window resize
+ */
+void get_input(inputDataStruct *input_data)
 {
     SDL_Event event;
 
+    reset_data_struct(&input_data);
+
     SDL_GetMouseState(&input_data->mouse_pos.x, &input_data->mouse_pos.y);
+
     while (SDL_PollEvent(&event))
     {
         _handle_event(event, input_data);
@@ -58,7 +64,7 @@ void get_input(inputDataStruct *input_data, renderDataStruct *renderData)
 }
 
 void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL]);
-void _handle_mouse_click(SDL_Event *event, mousePressState mouseState[MOUSE_BUTTONS_TOTAL], bool is_button_down);
+void _handle_mouse_click(SDL_Event *event, inputDataStruct *input_data);
 
 void _handle_event(SDL_Event event, inputDataStruct *input_data)
 {
@@ -72,27 +78,23 @@ void _handle_event(SDL_Event event, inputDataStruct *input_data)
         debug("Key pressed: %s", SDL_GetKeyName(event.key.key));
         break;
     }
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+        _handle_mouse_click(&event, input_data);
+        break;
     case SDL_EVENT_QUIT:
         input_data->exit = true;
         debug("Program termination requested");
         break;
     case SDL_EVENT_WINDOW_RESIZED:
-        SDL_GetWindowSize(renderData->window, &renderData->width, &renderData->height);
-        renderData->screenSizeRatio = ((float)renderData->height / (float)BASIC_HEIGHT + (float)renderData->width / (float)BASIC_WIDTH) / 2.0f;
-        debug("%f", renderData->screenSizeRatio);
-
+        input_data->resize = true;
         break;
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    case SDL_EVENT_MOUSE_BUTTON_UP:
-    {
-        bool is_button_down = event.type == SDL_EVENT_MOUSE_BUTTON_DOWN;
-        _handle_mouse_click(&event, input_data, is_button_down);
-        break;
-    }
     }
 }
-void _handle_mouse_click(SDL_Event *event, inputDataStruct *input_data, bool is_button_down)
+
+void _handle_mouse_click(SDL_Event *event, inputDataStruct *input_data)
 {
+    bool is_button_down = event->type == SDL_EVENT_MOUSE_BUTTON_DOWN;
 
     switch (event->button.button)
     {
@@ -109,6 +111,18 @@ void _handle_mouse_click(SDL_Event *event, inputDataStruct *input_data, bool is_
         break;
     }
 }
+
+/**
+ * Loads a texture from a relative path and returns a gameTexture structure.
+ *
+ * @param renderer The current SDL renderer.
+ * @param path     Relative path to the texture file (from the game executable directory).
+ * @return         A gameTexture structure containing:
+ *                 - w:       Width of the texture.
+ *                 - h:       Height of the texture.
+ *                 - success: Whether the texture was successfully loaded.
+ *                 - data:    The actual texture data.
+ */
 gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path)
 {
     gameTexture texture = {};
@@ -154,6 +168,21 @@ void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[K
     case SDLK_RIGHT:
         keyPress[KEY_ARROW_RIGHT] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
+    }
+}
+void reset_data_struct(inputDataStruct *input_data)
+{
+    input_data->exit = false;
+    input_data->resize = false;
+
+    for (int i = 0; i < MOUSE_BUTTONS_TOTAL; i++)
+    {
+        input_data->mouse_press[i] = MOUSE_STATE_UP;
+    }
+
+    for (int i = 0; i < KEYS_TOTAL; i++)
+    {
+        input_data->key_press[i] = KEY_STATE_UP;
     }
 }
 

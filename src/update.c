@@ -11,11 +11,11 @@
 
 #define SQRT_2 1.41421356237309504880
 
-walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
+
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data);
-bool _click_travel_finished(playerStruct *player);
 void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *render_data);
+
 void _frame_timing(renderDataStruct *render_data);
 void _cap_frame_rate(renderDataStruct *render_data, int fps);
 
@@ -23,13 +23,15 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
 
-    input_data->mouse_pos.x /= render_data->screenSizeRatio;
-    input_data->mouse_pos.y /= render_data->screenSizeRatio;
-
     if (input_data->resize)
     {
         SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
+        render_data->screenSizeRatio = get_screen_size_ratio(render_data->width);
     }
+    5;
+
+    input_data->mouse_pos.x /= render_data->screenSizeRatio;
+    input_data->mouse_pos.y /= render_data->screenSizeRatio;
 
 #if CAP_FRAME_RATE
     _cap_frame_rate(render_data, 240);
@@ -145,6 +147,7 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
     player->move_click.following_mouse_click = true;
 }
 
+bool _click_travel_finished(playerStruct *player);
 void _handle_player_mouse_moving(renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
@@ -190,6 +193,7 @@ void _handle_player_mouse_moving(renderDataStruct *render_data)
     }
 }
 
+walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data)
 {
     walkingDirection playerDirection = _get_walking_direction(key_press);

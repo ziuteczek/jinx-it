@@ -170,6 +170,11 @@ void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[K
     }
 }
 
+float get_screen_size_ratio(int window_width)
+{
+    return (float)window_width / (float)BASIC_WIDTH;
+}
+
 void quit(SDL_Window *window, SDL_Renderer *renderer)
 {
     SDL_DestroyRenderer(renderer);

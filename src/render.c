@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "debug.h"
 #include "render.h"
@@ -34,6 +35,7 @@ void _draw_map(renderDataStruct *render_data)
 
     map_width *= screen_size_ratio;
     map_height *= screen_size_ratio;
+    printf("%f \n", screen_size_ratio);
 
     SDL_FRect map_render_pos = {0, 0, map_width, map_height};
 
@@ -85,6 +87,8 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
         return false;
     }
 
+    render_data->screenSizeRatio = get_screen_size_ratio(render_data->width);
+
     render_data->textures[TEXTURE_MAP] = get_texture_from_path(render_data->renderer, "../assets/map.png");
     render_data->textures[TEXTURE_PLAYER] = get_texture_from_path(render_data->renderer, "../assets/player.png");
 
@@ -96,8 +100,6 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
             return false;
         }
     }
-
-    render_data->screenSizeRatio = ((float)render_data->height / (float)BASIC_HEIGHT + (float)render_data->width / (float)BASIC_WIDTH) / 2.0f;
 
     return true;
 }

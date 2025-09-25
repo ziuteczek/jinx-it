@@ -60,7 +60,7 @@ typedef struct inputDataStruct
 } inputDataStruct;
 
 bool launch(SDL_Window **window, SDL_Renderer **renderer);
-void reset_data_struct(inputDataStruct *input_data);
+float get_screen_size_ratio(int window_width);
 void get_input(inputDataStruct *input_data);
 void quit(SDL_Window *window, SDL_Renderer *renderer);
 gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path);

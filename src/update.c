@@ -66,6 +66,8 @@ bool _click_travel_finished(playerStruct *player)
         return !player_direction_x && !player_direction_y;
     case MOVE_DIRECTION_NEG_X_Y:
         return !player_direction_x && player_direction_y;
+    default:
+        return !player_direction_x && player_direction_y;
     }
 }
 
@@ -120,6 +122,10 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
     {
         player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
     }
+    else
+    {
+        printf("dupa \n");
+    }
 
     player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
 
@@ -129,6 +135,11 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
 void _handle_player_mouse_moving(renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
+
+    if (player->move_click.player_path_length == 0.0f)
+    {
+        return;
+    }
 
     float speed_ms = player->speed / 1000.0f;
 

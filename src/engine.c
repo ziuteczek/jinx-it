@@ -53,8 +53,6 @@ void get_input(inputDataStruct *input_data)
 {
     SDL_Event event;
 
-    reset_data_struct(&input_data);
-
     SDL_GetMouseState(&input_data->mouse_pos.x, &input_data->mouse_pos.y);
 
     while (SDL_PollEvent(&event))
@@ -150,6 +148,7 @@ gameTexture get_texture_from_path(SDL_Renderer *renderer, char *path)
 
     SDL_SetTextureScaleMode(new_texture, SDL_SCALEMODE_NEAREST);
     texture.data = new_texture;
+    texture.success = true;
     return texture;
 }
 void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[KEYS_TOTAL])
@@ -168,21 +167,6 @@ void _handle_key_click(bool isKeyDown, SDL_Keycode key, keyPressState keyPress[K
     case SDLK_RIGHT:
         keyPress[KEY_ARROW_RIGHT] = isKeyDown ? KEY_STATE_DOWN : KEY_STATE_UP;
         break;
-    }
-}
-void reset_data_struct(inputDataStruct *input_data)
-{
-    input_data->exit = false;
-    input_data->resize = false;
-
-    for (int i = 0; i < MOUSE_BUTTONS_TOTAL; i++)
-    {
-        input_data->mouse_press[i] = MOUSE_STATE_UP;
-    }
-
-    for (int i = 0; i < KEYS_TOTAL; i++)
-    {
-        input_data->key_press[i] = KEY_STATE_UP;
     }
 }
 

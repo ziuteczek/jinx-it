@@ -1,10 +1,8 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-
 #include <SDL3/SDL.h>
 #include <stdbool.h>
-
 
 #include "game.h"
 #include "engine.h"
@@ -20,7 +18,7 @@
  * - width:            Width of the window in pixels.
  * - height:           Height of the window in pixels.
  *
- * - screenSizeRatio:  Ratio of current screen size to the game's base resolution 
+ * - screenSizeRatio:  Ratio of current screen size to the game's base resolution
  *                     (see BASIC_WIDTH and BASIC_HEIGHT).
  *
  * - renderTime:       Timestamp of the current frame, in milliseconds since the game started.
@@ -46,10 +44,6 @@ typedef struct renderDataStruct
     Uint64 deltaTime;
 
     playerStruct player;
-
-    gameTexture textures[TEXTURES_TOTAL];
-
-    gameTexture textures[TEXTURES_TOTAL];
 
     gameTexture textures[TEXTURES_TOTAL];
 } renderDataStruct;

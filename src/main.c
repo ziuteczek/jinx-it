@@ -1,5 +1,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #include "debug.h"
@@ -32,8 +33,16 @@ int main(int argc, char **argv)
   renderDataStruct render_data;
   bool render_data_defaulting_succes = set_default_render_data(&render_data, window, renderer);
 
+  if (!set_default_render_data)
+  {
+    return 3;
+  }
+
   if (!render_data_defaulting_succes)
   {
+    printf("kicha \n");
+    quit(window, renderer);
+    debug("Setting render_data default values didn't succed");
     return 3;
   }
 

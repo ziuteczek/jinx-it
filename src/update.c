@@ -13,6 +13,7 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data);
 bool _click_travel_finished(playerStruct *player);
+void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *render_data);
 
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
@@ -26,7 +27,7 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
         SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
     }
 
-    if (true)
+    if (false)
     {
         const float frameRate = 1000.0f / 240.0f;
 
@@ -42,89 +43,7 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
 
     render_data->deltaTime = render_data->renderTime - oldFrameRenderTime;
 
-    if (player->move_click.following_mouse_click)
-    {
-        float speed_ms = player->speed / 1000.0f;
-
-        float pixels_traveled = render_data->deltaTime * speed_ms;
-        float part_of_path_traveled = pixels_traveled / player->move_click.player_path_length;
-
-        if (_click_travel_finished(player))
-        {
-            switch (player->move_click.move_direction)
-            {
-            case MOVE_DIRECTION_X_Y:
-                player->x += part_of_path_traveled * player->move_click.distance.x;
-                player->y += part_of_path_traveled * player->move_click.distance.y;
-                break;
-
-            case MOVE_DIRECTION_X_NEG_Y:
-                player->x += part_of_path_traveled * player->move_click.distance.x;
-                player->y -= part_of_path_traveled * player->move_click.distance.y;
-                break;
-
-            case MOVE_DIRECTION_NEG_X_Y:
-                player->x -= part_of_path_traveled * player->move_click.distance.x;
-                player->y += part_of_path_traveled * player->move_click.distance.y;
-                break;
-
-            case MOVE_DIRECTION_NEG_X_NEG_Y:
-                player->x -= part_of_path_traveled * player->move_click.distance.x;
-                player->y -= part_of_path_traveled * player->move_click.distance.y;
-                break;
-            }
-        }
-        else
-        {
-            player->move_click.following_mouse_click = false;
-        }
-    }
-
-    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN)
-    {
-
-        player->move_click.direction.x = input_data->mouse_pos.x;
-        player->move_click.direction.y = input_data->mouse_pos.y;
-
-        // Distance bettwen player and designater pixel
-        player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
-        player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
-
-        printf("%f %f %f %f \n", player->x, player->move_click.direction.x, player->y, player->move_click.direction.x);
-
-        // Is the player going fowart (increasing coordinates)
-        bool player_direction_x = player->x < player->move_click.direction.x;
-        bool player_direction_y = player->y < player->move_click.direction.y;
-
-        if (player_direction_x && player_direction_y)
-        {
-            player->move_click.move_direction = MOVE_DIRECTION_X_Y;
-            printf("+X+Y \n");
-        }
-        else if (player_direction_x && !player_direction_y)
-        {
-            player->move_click.move_direction = MOVE_DIRECTION_X_NEG_Y;
-            printf("+X-Y \n");
-        }
-        else if (!player_direction_x && !player_direction_y)
-        {
-            printf("-X-Y \n");
-            player->move_click.move_direction = MOVE_DIRECTION_NEG_X_NEG_Y;
-        }
-        else if (!player_direction_x && player_direction_y)
-        {
-            printf("-X+Y \n");
-            player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
-        }
-        else
-        {
-            printf("err \n");
-        }
-
-        player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
-
-        player->move_click.following_mouse_click = true;
-    }
+    _handle_mouse_movement(input_data, render_data);
 
     if (_any_key_pressed(input_data->key_press) && render_data->deltaTime > 0)
     {
@@ -147,6 +66,103 @@ bool _click_travel_finished(playerStruct *player)
         return !player_direction_x && !player_direction_y;
     case MOVE_DIRECTION_NEG_X_Y:
         return !player_direction_x && player_direction_y;
+    }
+}
+
+void _handle_player_mouse_moving(renderDataStruct *render_data);
+void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderDataStruct *render_data);
+
+void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *render_data)
+{
+    playerStruct *player = &render_data->player;
+
+    // If player is currently marked as moving, uptdates his position
+    if (player->move_click.following_mouse_click)
+    {
+        _handle_player_mouse_moving(render_data);
+    }
+
+    // Cheks if right mouse button was pressed, if so stats player movement to clicked pixel
+    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN)
+    {
+        _handle_player_mouse_start_movement(input_data, render_data);
+    }
+}
+
+void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderDataStruct *render_data)
+{
+    playerStruct *player = &render_data->player;
+
+    player->move_click.direction.x = input_data->mouse_pos.x;
+    player->move_click.direction.y = input_data->mouse_pos.y;
+
+    // Distance bettwen player and designater pixel
+    player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
+    player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
+
+    // Is the player going fowart (increasing coordinates)
+    bool player_direction_x = player->x < player->move_click.direction.x;
+    bool player_direction_y = player->y < player->move_click.direction.y;
+
+    if (player_direction_x && player_direction_y)
+    {
+        player->move_click.move_direction = MOVE_DIRECTION_X_Y;
+    }
+    else if (player_direction_x && !player_direction_y)
+    {
+        player->move_click.move_direction = MOVE_DIRECTION_X_NEG_Y;
+    }
+    else if (!player_direction_x && !player_direction_y)
+    {
+        player->move_click.move_direction = MOVE_DIRECTION_NEG_X_NEG_Y;
+    }
+    else if (!player_direction_x && player_direction_y)
+    {
+        player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
+    }
+
+    player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
+
+    player->move_click.following_mouse_click = true;
+}
+
+void _handle_player_mouse_moving(renderDataStruct *render_data)
+{
+    playerStruct *player = &render_data->player;
+
+    float speed_ms = player->speed / 1000.0f;
+
+    float pixels_traveled = render_data->deltaTime * speed_ms;
+    float part_of_path_traveled = pixels_traveled / player->move_click.player_path_length;
+
+    if (_click_travel_finished(player))
+    {
+        switch (player->move_click.move_direction)
+        {
+        case MOVE_DIRECTION_X_Y:
+            player->x += part_of_path_traveled * player->move_click.distance.x;
+            player->y += part_of_path_traveled * player->move_click.distance.y;
+            break;
+
+        case MOVE_DIRECTION_X_NEG_Y:
+            player->x += part_of_path_traveled * player->move_click.distance.x;
+            player->y -= part_of_path_traveled * player->move_click.distance.y;
+            break;
+
+        case MOVE_DIRECTION_NEG_X_Y:
+            player->x -= part_of_path_traveled * player->move_click.distance.x;
+            player->y += part_of_path_traveled * player->move_click.distance.y;
+            break;
+
+        case MOVE_DIRECTION_NEG_X_NEG_Y:
+            player->x -= part_of_path_traveled * player->move_click.distance.x;
+            player->y -= part_of_path_traveled * player->move_click.distance.y;
+            break;
+        }
+    }
+    else
+    {
+        player->move_click.following_mouse_click = false;
     }
 }
 

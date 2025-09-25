@@ -6,29 +6,60 @@
 #include "engine.h"
 #include "config.h"
 
-void render(renderDataStruct *renderData)
+void _draw_player(renderDataStruct *render_data);
+void _draw_map(renderDataStruct *render_data);
+
+void render(renderDataStruct *render_data)
 {
-    SDL_Renderer *renderer = renderData->renderer;
+    SDL_Renderer *renderer = render_data->renderer;
 
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     // Drawing map
-    SDL_FRect map_render_pos = {
-        0,
-        0,
-        (float)renderData->textures[TEXTURE_MAP].w * renderData->screenSizeRatio,
-        (float)renderData->textures[TEXTURE_MAP].h * renderData->screenSizeRatio,
-    };
-    SDL_RenderTexture(renderer, renderData->textures[TEXTURE_MAP].data, NULL, &map_render_pos);
+    _draw_map(render_data);
 
     // Drawing player
-    SDL_FRect player_render_pos = {renderData->player.x * renderData->screenSizeRatio, renderData->player.y * renderData->screenSizeRatio, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].w, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].h};
-
-    SDL_RenderTexture(renderer, renderData->textures[TEXTURE_PLAYER].data, NULL, &player_render_pos);
+    _draw_player(render_data);
 
     SDL_RenderPresent(renderer);
 }
+
+void _draw_map(renderDataStruct *render_data)
+{
+    float screen_size_ratio = render_data->screenSizeRatio;
+
+    float map_width = render_data->textures[TEXTURE_MAP].w;
+    float map_height = render_data->textures[TEXTURE_MAP].h;
+
+    map_width *= screen_size_ratio;
+    map_height *= screen_size_ratio;
+
+    SDL_FRect map_render_pos = {0, 0, map_width, map_height};
+
+    SDL_RenderTexture(render_data->renderer, render_data->textures[TEXTURE_MAP].data, NULL, &map_render_pos);
+}
+
+void _draw_player(renderDataStruct *render_data)
+{
+    const float screen_size_ratio = render_data->screenSizeRatio;
+
+    float player_pos_x = render_data->player.x - render_data->textures[TEXTURE_PLAYER].w / 2;
+    float player_pos_y = render_data->player.y - render_data->textures[TEXTURE_PLAYER].h / 2;
+
+    float player_width = (float)render_data->textures[TEXTURE_PLAYER].w;
+    float player_height = (float)render_data->textures[TEXTURE_PLAYER].h;
+
+    player_pos_x *= screen_size_ratio;
+    player_pos_y *= screen_size_ratio;
+    player_width *= screen_size_ratio;
+    player_height *= screen_size_ratio;
+
+    SDL_FRect player_render_pos = {player_pos_x, player_pos_y, player_width, player_height};
+
+    SDL_RenderTexture(render_data->renderer, render_data->textures[TEXTURE_PLAYER].data, NULL, &player_render_pos);
+}
+
 void refresh_render_data_struct(renderDataStruct *renderData)
 {
 }
@@ -45,7 +76,6 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
     render_data->player.speed = 100;
 
     render_data->player.move_click.following_mouse_click = false;
-
 
     bool reading_window_size_succes = SDL_GetWindowSize(window, &render_data->width, &render_data->height);
 

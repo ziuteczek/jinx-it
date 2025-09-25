@@ -15,6 +15,11 @@ void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *re
 
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
+    playerStruct *player = &render_data->player;
+
+    input_data->mouse_pos.x /= render_data->screenSizeRatio;
+    input_data->mouse_pos.y /= render_data->screenSizeRatio;
+
     if (input_data->resize)
     {
         SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
@@ -36,36 +41,39 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
 
     render_data->deltaTime = render_data->renderTime - oldFrameRenderTime;
 
-    if (render_data->player.following_mouse_click)
+    if (player->move_click.following_mouse_click)
     {
-        float speed_ms = render_data->player.speed / 1000.0f;
+        float speed_ms = player->speed / 1000.0f;
 
         float pixels_traveled = render_data->deltaTime * speed_ms;
+        float part_of_path_traveled = pixels_traveled / player->move_click.player_path_length;
 
-        float part_of_path_traveled = pixels_traveled / render_data->player.player_path_length;
-
-        if (render_data->player.x / render_data->screenSizeRatio <= render_data->player.direction.x)
+        if (player->x <= player->move_click.direction.x)
         {
-            render_data->player.x += part_of_path_traveled * render_data->player.direction.x;
-            render_data->player.y += part_of_path_traveled * render_data->player.direction.y;
+            player->x += part_of_path_traveled * player->move_click.distance.x;
+            player->y += part_of_path_traveled * player->move_click.distance.y;
         }
         else
         {
-            render_data->player.following_mouse_click = false;
+            player->move_click.following_mouse_click = false;
         }
     }
 
-    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN)
+    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN && !player->move_click.following_mouse_click)
     {
-        render_data->player.following_mouse_click = true;
 
-        render_data->player.direction.x = input_data->mouse_pos.x / render_data->screenSizeRatio;
-        render_data->player.direction.y = input_data->mouse_pos.y / render_data->screenSizeRatio;
+        player->move_click.direction.x = input_data->mouse_pos.x;
+        player->move_click.direction.y = input_data->mouse_pos.y;
 
-        render_data->player.player_path_length = sqrt(pow(render_data->player.x, 2) + pow(render_data->player.y, 2));
+        // Distance bettwen player and designater pixel
+        player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
+        player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
+
+        player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
+
+        player->move_click.following_mouse_click = true;
     }
 
-    // Only handle movement if deltaTime > 0
     if (_any_key_pressed(input_data->key_press) && render_data->deltaTime > 0)
     {
         _handle_key_press(input_data->key_press, render_data);

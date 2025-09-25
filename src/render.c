@@ -23,7 +23,7 @@ void render(renderDataStruct *renderData)
     SDL_RenderTexture(renderer, renderData->textures[TEXTURE_MAP].data, NULL, &map_render_pos);
 
     // Drawing player
-    SDL_FRect player_render_pos = {renderData->player.x, renderData->player.y, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].w, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].h};
+    SDL_FRect player_render_pos = {renderData->player.x * renderData->screenSizeRatio, renderData->player.y * renderData->screenSizeRatio, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].w, renderData->screenSizeRatio * (float)renderData->textures[TEXTURE_PLAYER].h};
 
     SDL_RenderTexture(renderer, renderData->textures[TEXTURE_PLAYER].data, NULL, &player_render_pos);
 
@@ -42,7 +42,10 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
     render_data->deltaTime = 0;
     render_data->renderTime = 0;
 
-    render_data->player.speed = 750;
+    render_data->player.speed = 100;
+
+    render_data->player.move_click.following_mouse_click = false;
+
 
     bool reading_window_size_succes = SDL_GetWindowSize(window, &render_data->width, &render_data->height);
 

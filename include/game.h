@@ -1,6 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+typedef struct moveClick
+{
+    bool following_mouse_click;
+    SDL_FPoint distance;
+    SDL_FPoint direction;
+
+    float player_path_length;
+} moveClick;
+
 /**
  * Struct to hold player sprite info
  *
@@ -16,8 +25,6 @@ typedef struct playerStruct
 
     int speed;
 
-    bool following_mouse_click;
-    SDL_FPoint direction;
-    float player_path_length;
+    moveClick move_click;
 } playerStruct;
 #endif

@@ -50,7 +50,6 @@ typedef struct renderDataStruct
 
 void render(renderDataStruct *renderData);
 bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, SDL_Renderer *renderer);
-void refresh_render_data_struct(renderDataStruct *renderData);
 void free_textures(renderDataStruct *render_data);
 renderDataStruct get_default_render_data(SDL_Window *window, SDL_Renderer *renderer);
 void refresh_render_data_struct(renderDataStruct *renderData);

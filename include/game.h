@@ -1,11 +1,21 @@
 #ifndef GAME_H
 #define GAME_H
 
+typedef enum moveDirection
+{
+    MOVE_DIRECTION_X_Y,          // +X +Y
+    MOVE_DIRECTION_X_NEG_Y,     // +X -Y
+    MOVE_DIRECTION_NEG_X_NEG_Y, // -X -Y
+    MOVE_DIRECTION_NEG_X_Y      // -X +Y
+} moveDirection;
+
 typedef struct moveClick
 {
     bool following_mouse_click;
     SDL_FPoint distance;
     SDL_FPoint direction;
+    
+    moveDirection move_direction;
 
     float player_path_length;
 } moveClick;
@@ -25,6 +35,7 @@ typedef struct playerStruct
 
     int speed;
 
+    
     moveClick move_click;
 } playerStruct;
 #endif

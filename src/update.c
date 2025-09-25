@@ -12,6 +12,7 @@
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data);
+bool _click_travel_finished(playerStruct *player);
 
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
@@ -48,10 +49,30 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
         float pixels_traveled = render_data->deltaTime * speed_ms;
         float part_of_path_traveled = pixels_traveled / player->move_click.player_path_length;
 
-        if (player->x <= player->move_click.direction.x)
+        if (_click_travel_finished(player))
         {
-            player->x += part_of_path_traveled * player->move_click.distance.x;
-            player->y += part_of_path_traveled * player->move_click.distance.y;
+            switch (player->move_click.move_direction)
+            {
+            case MOVE_DIRECTION_X_Y:
+                player->x += part_of_path_traveled * player->move_click.distance.x;
+                player->y += part_of_path_traveled * player->move_click.distance.y;
+                break;
+
+            case MOVE_DIRECTION_X_NEG_Y:
+                player->x += part_of_path_traveled * player->move_click.distance.x;
+                player->y -= part_of_path_traveled * player->move_click.distance.y;
+                break;
+
+            case MOVE_DIRECTION_NEG_X_Y:
+                player->x -= part_of_path_traveled * player->move_click.distance.x;
+                player->y += part_of_path_traveled * player->move_click.distance.y;
+                break;
+
+            case MOVE_DIRECTION_NEG_X_NEG_Y:
+                player->x -= part_of_path_traveled * player->move_click.distance.x;
+                player->y -= part_of_path_traveled * player->move_click.distance.y;
+                break;
+            }
         }
         else
         {
@@ -59,7 +80,7 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
         }
     }
 
-    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN && !player->move_click.following_mouse_click)
+    if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN)
     {
 
         player->move_click.direction.x = input_data->mouse_pos.x;
@@ -69,6 +90,37 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
         player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
         player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
 
+        printf("%f %f %f %f \n", player->x, player->move_click.direction.x, player->y, player->move_click.direction.x);
+
+        // Is the player going fowart (increasing coordinates)
+        bool player_direction_x = player->x < player->move_click.direction.x;
+        bool player_direction_y = player->y < player->move_click.direction.y;
+
+        if (player_direction_x && player_direction_y)
+        {
+            player->move_click.move_direction = MOVE_DIRECTION_X_Y;
+            printf("+X+Y \n");
+        }
+        else if (player_direction_x && !player_direction_y)
+        {
+            player->move_click.move_direction = MOVE_DIRECTION_X_NEG_Y;
+            printf("+X-Y \n");
+        }
+        else if (!player_direction_x && !player_direction_y)
+        {
+            printf("-X-Y \n");
+            player->move_click.move_direction = MOVE_DIRECTION_NEG_X_NEG_Y;
+        }
+        else if (!player_direction_x && player_direction_y)
+        {
+            printf("-X+Y \n");
+            player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
+        }
+        else
+        {
+            printf("err \n");
+        }
+
         player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
 
         player->move_click.following_mouse_click = true;
@@ -77,6 +129,24 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
     if (_any_key_pressed(input_data->key_press) && render_data->deltaTime > 0)
     {
         _handle_key_press(input_data->key_press, render_data);
+    }
+}
+
+bool _click_travel_finished(playerStruct *player)
+{
+    bool player_direction_x = player->x < player->move_click.direction.x;
+    bool player_direction_y = player->y < player->move_click.direction.y;
+
+    switch (player->move_click.move_direction)
+    {
+    case MOVE_DIRECTION_X_Y:
+        return player_direction_x && player_direction_y;
+    case MOVE_DIRECTION_X_NEG_Y:
+        return player_direction_x && !player_direction_y;
+    case MOVE_DIRECTION_NEG_X_NEG_Y:
+        return !player_direction_x && !player_direction_y;
+    case MOVE_DIRECTION_NEG_X_Y:
+        return !player_direction_x && player_direction_y;
     }
 }
 

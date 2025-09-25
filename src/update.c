@@ -7,6 +7,8 @@
 #include "engine.h"
 #include "render.h"
 
+#define CAP_FRAME_RATE false
+
 #define SQRT_2 1.41421356237309504880
 
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
@@ -14,6 +16,8 @@ bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data);
 bool _click_travel_finished(playerStruct *player);
 void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *render_data);
+void _frame_timing(renderDataStruct *render_data);
+void _cap_frame_rate(renderDataStruct *render_data, int fps);
 
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
@@ -27,27 +31,36 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
         SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
     }
 
-    if (false)
-    {
-        const float frameRate = 1000.0f / 240.0f;
+#if CAP_FRAME_RATE
+    _cap_frame_rate(render_data, 240);
+#endif
 
-        if ((float)render_data->deltaTime < frameRate)
-        {
-            SDL_Delay(frameRate - (float)render_data->deltaTime);
-        }
-    }
-
-    Uint64 oldFrameRenderTime = render_data->renderTime;
-
-    render_data->renderTime = SDL_GetTicks();
-
-    render_data->deltaTime = render_data->renderTime - oldFrameRenderTime;
+    _frame_timing(render_data);
 
     _handle_mouse_movement(input_data, render_data);
 
     if (_any_key_pressed(input_data->key_press) && render_data->deltaTime > 0)
     {
         _handle_key_press(input_data->key_press, render_data);
+    }
+}
+
+void _frame_timing(renderDataStruct *render_data)
+{
+    Uint64 oldFrameRenderTime = render_data->renderTime;
+
+    render_data->renderTime = SDL_GetTicks();
+
+    render_data->deltaTime = render_data->renderTime - oldFrameRenderTime;
+}
+
+void _cap_frame_rate(renderDataStruct *render_data, int fps)
+{
+    const float frameRate = 1000.0f / (float)fps;
+
+    if ((float)render_data->deltaTime < frameRate)
+    {
+        SDL_Delay(frameRate - (float)render_data->deltaTime);
     }
 }
 

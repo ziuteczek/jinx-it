@@ -7,6 +7,7 @@
 #include "game.h"
 #include "engine.h"
 #include "texture.h"
+#include "missile.h"
 
 /**
  * Structure containing all data required to render a single frame.
@@ -27,9 +28,6 @@
  * - player:           Current player data (see playerStruct).
  * - textures:         Array of game textures used for rendering (see gameTexture).
  */
-#include "engine.h"
-#include "texture.h"
-
 typedef struct renderDataStruct
 {
     SDL_Window *window;
@@ -46,6 +44,8 @@ typedef struct renderDataStruct
     playerStruct player;
 
     gameTexture textures[TEXTURES_TOTAL];
+
+    misslesStruct missles;
 } renderDataStruct;
 
 void render(renderDataStruct *renderData);

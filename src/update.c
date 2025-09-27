@@ -6,6 +6,8 @@
 #include "update.h"
 #include "engine.h"
 #include "render.h"
+#include "texture.h"
+#include "missile.h"
 
 #define CAP_FRAME_RATE false
 
@@ -19,19 +21,14 @@ void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *rende
 void _frame_timing(renderDataStruct *render_data);
 void _cap_frame_rate(renderDataStruct *render_data, int fps);
 
+void _handle_scaling(inputDataStruct *input_data, renderDataStruct *render_data);
+void update_missles(renderDataStruct *render_data);
+
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
 
-    if (input_data->resize)
-    {
-        SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
-        render_data->screenSizeRatio = get_screen_size_ratio(render_data->width);
-    }
-    5;
-
-    input_data->mouse_pos.x /= render_data->screenSizeRatio;
-    input_data->mouse_pos.y /= render_data->screenSizeRatio;
+    _handle_scaling(input_data, render_data);
 
 #if CAP_FRAME_RATE
     _cap_frame_rate(render_data, 240);
@@ -45,8 +42,20 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
     {
         _handle_key_press(input_data->key_press, render_data);
     }
+    update_missles(render_data);
 }
 
+void _handle_scaling(inputDataStruct *input_data, renderDataStruct *render_data)
+{
+    if (input_data->resize)
+    {
+        SDL_GetWindowSize(render_data->window, &render_data->width, &render_data->height);
+        render_data->screenSizeRatio = get_screen_size_ratio(render_data->width);
+    }
+
+    input_data->mouse_pos.x /= render_data->screenSizeRatio;
+    input_data->mouse_pos.y /= render_data->screenSizeRatio;
+}
 void _frame_timing(renderDataStruct *render_data)
 {
     Uint64 oldFrameRenderTime = render_data->renderTime;
@@ -137,10 +146,6 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
     {
         player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
     }
-    else
-    {
-        printf("dupa \n");
-    }
 
     player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
 
@@ -196,6 +201,8 @@ void _handle_player_mouse_moving(renderDataStruct *render_data)
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL]);
 void _handle_key_press(keyPressState key_press[KEYS_TOTAL], renderDataStruct *render_data)
 {
+    render_data->player.move_click.following_mouse_click = false;
+
     walkingDirection playerDirection = _get_walking_direction(key_press);
 
     // player speed expressed in pixels traveled every millisecond
@@ -282,4 +289,69 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
         return DIRECTION_LEFT;
 
     return DIRECTION_NONE;
+}
+
+/**
+ * Missle
+ */
+
+textures _missle_type_to_texture(misslesTypes missle_type);
+
+void new_missle(misslesStruct *missles)
+{
+    missleStruct *missle_arr = missles->data;
+
+    if (missles->count == 0)
+    {
+        missle_arr = malloc(sizeof(missleStruct));
+    }
+    else
+    {
+        missle_arr = realloc(missle_arr, sizeof(misslesStruct) * (missles->count + 1));
+    }
+
+    missles->data = missle_arr;
+
+    missleStruct *current_missle = &missle_arr[missles->count];
+
+    misslesTypes missle_type = (misslesTypes)SDL_rand(MISSLES_TOTAL);
+    current_missle->texture = _missle_type_to_texture(missle_type);
+
+    current_missle->pos.x = SDL_rand(BASIC_WIDTH);
+    current_missle->pos.y = BASIC_HEIGHT;
+
+    current_missle->destination.x = current_missle->pos.x;
+    current_missle->destination.y = 0;
+
+    current_missle->speed = 50;
+
+    missles->count++;
+}
+
+void _destroy_missle(misslesStruct *missles, int index);
+void update_missles(renderDataStruct *render_data)
+{
+    missleStruct *missle_arr = render_data->missles.data;
+
+    for (int i = render_data->missles.count - 1; i >= 0; i--)
+    {
+        // player speed expressed in pixels traveled every millisecond
+        const float speed_ms = missle_arr[i].speed / 1000.0f;
+
+        // number of pixels traveled by player
+        missle_arr[i].pos.y -= render_data->deltaTime * speed_ms;
+
+        gameTexture missle_texture = render_data->textures[missle_arr[i].texture];
+
+        bool destroy_missle = missle_arr[i].pos.y < 0 - missle_texture.h;
+    }
+}
+
+textures _missle_type_to_texture(misslesTypes missle_type)
+{
+    switch (missle_type)
+    {
+    case MISSLE_ROCKET:
+        return TEXTURE_ROCKET;
+    }
 }

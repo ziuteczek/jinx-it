@@ -119,14 +119,14 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
 {
     playerStruct *player = &render_data->player;
 
-    player->move_click.direction.x = input_data->mouse_pos.x;
-    player->move_click.direction.y = input_data->mouse_pos.y;
+    player->move_click.direction.x = input_data->mouse_pos.x - render_data->textures[TEXTURE_PLAYER].w / 2;
+    player->move_click.direction.y = input_data->mouse_pos.y - render_data->textures[TEXTURE_PLAYER].h / 2;
 
     // Distance bettwen player and designater pixel
     player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
     player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
 
-    // Is the player going fowart (increasing coordinates)
+    // Is the player going foward (increasing coordinates)
     bool player_direction_x = player->x < player->move_click.direction.x;
     bool player_direction_y = player->y < player->move_click.direction.y;
 

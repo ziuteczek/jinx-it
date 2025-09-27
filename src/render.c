@@ -65,8 +65,8 @@ void _draw_player(renderDataStruct *render_data)
 {
     const float screen_size_ratio = render_data->screenSizeRatio;
 
-    float player_pos_x = render_data->player.x - render_data->textures[TEXTURE_PLAYER].w / 2;
-    float player_pos_y = render_data->player.y - render_data->textures[TEXTURE_PLAYER].h / 2;
+    float player_pos_x = render_data->player.x;
+    float player_pos_y = render_data->player.y;
 
     float player_width = (float)render_data->textures[TEXTURE_PLAYER].w;
     float player_height = (float)render_data->textures[TEXTURE_PLAYER].h;

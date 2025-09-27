@@ -296,55 +296,87 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
  */
 
 textures _missle_type_to_texture(misslesTypes missle_type);
+missleNode *getLastMissle(missleNode *missles);
 
 void new_missle(misslesStruct *missles)
 {
-    missleStruct *missle_arr = missles->data;
-
+    missleStruct *new_missle;
     if (missles->count == 0)
     {
-        missle_arr = malloc(sizeof(missleStruct));
+        missles->data = malloc(sizeof(missleNode));
+        missles->data->next = NULL;
+        new_missle = &missles->data->data;
     }
     else
     {
-        missle_arr = realloc(missle_arr, sizeof(misslesStruct) * (missles->count + 1));
+        missleNode *last_missle;
+        last_missle = getLastMissle(missles->data);
+        last_missle->next = malloc(sizeof(missleNode));
+        missles->data->next = NULL;
+
+        new_missle = &last_missle->next->data;
     }
 
-    missles->data = missle_arr;
-
-    missleStruct *current_missle = &missle_arr[missles->count];
-
     misslesTypes missle_type = (misslesTypes)SDL_rand(MISSLES_TOTAL);
-    current_missle->texture = _missle_type_to_texture(missle_type);
+    new_missle->texture = _missle_type_to_texture(missle_type);
 
-    current_missle->pos.x = SDL_rand(BASIC_WIDTH);
-    current_missle->pos.y = BASIC_HEIGHT;
+    new_missle->pos.x = SDL_rand(BASIC_WIDTH);
+    new_missle->pos.y = BASIC_HEIGHT;
 
-    current_missle->destination.x = current_missle->pos.x;
-    current_missle->destination.y = 0;
+    new_missle->destination.x = new_missle->pos.x;
+    new_missle->destination.y = 0;
 
-    current_missle->speed = 50;
+    new_missle->speed = 50;
 
     missles->count++;
+}
+
+void destroy_all_missles(missleNode *missle_head)
+{
+    missleNode *current = missle_head;
+    while (current != NULL)
+    {
+        missleNode *next = current->next;
+        free(current);
+        current = next;
+    }
 }
 
 void _destroy_missle(misslesStruct *missles, int index);
 void update_missles(renderDataStruct *render_data)
 {
-    missleStruct *missle_arr = render_data->missles.data;
+    missleNode *current = render_data->missles.data;
 
-    for (int i = render_data->missles.count - 1; i >= 0; i--)
+    while (current != NULL)
     {
+        missleStruct *missle_arr = &current->data;
         // player speed expressed in pixels traveled every millisecond
-        const float speed_ms = missle_arr[i].speed / 1000.0f;
+        const float speed_ms = missle_arr->speed / 1000.0f;
 
         // number of pixels traveled by player
-        missle_arr[i].pos.y -= render_data->deltaTime * speed_ms;
+        missle_arr->pos.y -= render_data->deltaTime * speed_ms;
 
-        gameTexture missle_texture = render_data->textures[missle_arr[i].texture];
+        gameTexture missle_texture = render_data->textures[missle_arr->texture];
 
-        bool destroy_missle = missle_arr[i].pos.y < 0 - missle_texture.h;
+        bool destroy_missle = missle_arr->pos.y < 0 - missle_texture.h;
+
+        current = current->next;
     }
+}
+
+missleNode *getLastMissle(missleNode *missles)
+{
+    if (missles == NULL)
+    {
+        return NULL;
+    }
+
+    missleNode *current = missles;
+    while (current->next != NULL)
+    {
+        current = current->next;
+    }
+    return current;
 }
 
 textures _missle_type_to_texture(misslesTypes missle_type)

@@ -21,4 +21,5 @@ typedef enum walkingDirection
 
 void update(inputDataStruct *input_data, struct renderDataStruct *renderData);
 void new_missle(misslesStruct *missles_data);
+void destroy_all_missles(missleNode *missle_head);
 #endif

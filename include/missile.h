@@ -22,11 +22,18 @@ typedef struct missleStruct
     textures texture;
 } missleStruct;
 
+typedef struct missleNode
+{
+    missleStruct data;
+    struct missleNode *next;
+} missleNode;
+
 typedef struct misslesStruct
 {
     int count;
     Uint64 last_missle_added;
 
-    missleStruct *data;
+    missleNode *data;
 } misslesStruct;
+
 #endif

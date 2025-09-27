@@ -30,19 +30,21 @@ void render(renderDataStruct *render_data)
 
 void _draw_missle(renderDataStruct *render_data)
 {
-    for (int i = 0; i < render_data->missles.count; i++)
+    missleNode *current = render_data->missles.data;
+    while (current != NULL)
     {
-        missleStruct *missle = &render_data->missles.data[i];
+        missleStruct *missle = &current->data;
         gameTexture *missle_texture = &render_data->textures[missle->texture];
 
         SDL_FRect render_target;
-
         render_target.h = missle_texture->h * render_data->screenSizeRatio;
         render_target.w = missle_texture->w * render_data->screenSizeRatio;
         render_target.x = missle->pos.x * render_data->screenSizeRatio;
         render_target.y = missle->pos.y * render_data->screenSizeRatio;
 
         SDL_RenderTexture(render_data->renderer, missle_texture->data, NULL, &render_target);
+
+        current = current->next;
     }
 }
 

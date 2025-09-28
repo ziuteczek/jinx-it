@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   }
 
   free_textures(&render_data);
-  destroy_all_missles(render_data.missles.data);
+  destroy_all_missles(&render_data.missles.data);
   free(render_data.missles.data);
 
   quit(window, renderer);

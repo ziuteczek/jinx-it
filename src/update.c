@@ -331,36 +331,60 @@ void new_missle(misslesStruct *missles)
     missles->count++;
 }
 
-void destroy_all_missles(missleNode *missle_head)
+void destroy_all_missles(missleNode **missle_head)
 {
-    missleNode *current = missle_head;
+    missleNode *current = *missle_head;
     while (current != NULL)
     {
         missleNode *next = current->next;
         free(current);
         current = next;
     }
+    *missle_head = NULL;
+}
+void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
+{
+    if (prev_node != NULL)
+    {
+        prev_node->next = to_destroy_node->next;
+    }
+    free(to_destroy_node);
 }
 
-void _destroy_missle(misslesStruct *missles, int index);
+
 void update_missles(renderDataStruct *render_data)
 {
-    missleNode *current = render_data->missles.data;
+    missleNode *current_missle_node = render_data->missles.data;
+    missleNode *prev_missile_node = NULL;
 
-    while (current != NULL)
+    while (current_missle_node != NULL)
     {
-        missleStruct *missle_arr = &current->data;
-        // player speed expressed in pixels traveled every millisecond
-        const float speed_ms = missle_arr->speed / 1000.0f;
+        missleStruct *current_missle = &current_missle_node->data;
+        const float speed_ms = current_missle->speed / 1000.0f;
 
-        // number of pixels traveled by player
-        missle_arr->pos.y -= render_data->deltaTime * speed_ms;
+        current_missle->pos.y -= render_data->deltaTime * speed_ms;
 
-        gameTexture missle_texture = render_data->textures[missle_arr->texture];
+        gameTexture missle_texture = render_data->textures[current_missle->texture];
+        bool missile_out_of_range = current_missle->pos.y < 0 - missle_texture.h;
 
-        bool destroy_missle = missle_arr->pos.y < 0 - missle_texture.h;
+        //Destroying missle
+        if (missile_out_of_range)
+        {
+            missleNode *to_destroy = current_missle_node;
+            current_missle_node = current_missle_node->next;
 
-        current = current->next;
+            destroy_missle(prev_missile_node, to_destroy);
+        }
+
+        if (missile_out_of_range && prev_missile_node == NULL)
+        {
+            render_data->missles.data = current_missle_node;
+        }
+        else if (!missile_out_of_range)
+        {
+            prev_missile_node = current_missle_node;
+            current_missle_node = current_missle_node->next;
+        }
     }
 }
 

@@ -298,6 +298,11 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 textures _missle_type_to_texture(misslesTypes missle_type);
 missleNode *getLastMissle(missleNode *missles);
 
+/**
+ * Creates a new missile and adds it to the linked list of missiles.
+ * 
+ * @param missles Pointer to the misslesStruct containing the linked list and count of missiles.
+ */
 void new_missle(misslesStruct *missles)
 {
     missleStruct *new_missle;
@@ -331,6 +336,12 @@ void new_missle(misslesStruct *missles)
     missles->count++;
 }
 
+/**
+ * This function iterates through the linked list of missiles, freeing each node's memory.
+ * After all nodes are freed, the head pointer is set to NULL to indicate the list is empty.
+ *
+ * @param missle_head Pointer to the head pointer of the missile linked list.
+ */
 void destroy_all_missles(missleNode **missle_head)
 {
     missleNode *current = *missle_head;
@@ -342,6 +353,12 @@ void destroy_all_missles(missleNode **missle_head)
     }
     *missle_head = NULL;
 }
+/**
+ * Destroys a missile node from the linked list.
+ *
+ * @param prev_node Pointer to the previous node in the linked list. If the node to be destroyed is the head, this should be NULL.
+ * @param to_destroy_node Pointer to the node that needs to be destroyed.
+ */
 void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
 {
     if (prev_node != NULL)
@@ -351,7 +368,11 @@ void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
     free(to_destroy_node);
 }
 
-
+/**
+ * Updates all data of the missiles
+ * 
+ * @param render_data Pointer to the renderDataStruct
+ */
 void update_missles(renderDataStruct *render_data)
 {
     missleNode *current_missle_node = render_data->missles.data;
@@ -387,7 +408,11 @@ void update_missles(renderDataStruct *render_data)
         }
     }
 }
-
+/**
+ * Returns the last node in the linked list of missiles.
+ * 
+ * @return Pointer to the last missile node, or NULL if the list is empty.
+ */
 missleNode *getLastMissle(missleNode *missles)
 {
     if (missles == NULL)
@@ -403,9 +428,14 @@ missleNode *getLastMissle(missleNode *missles)
     return current;
 }
 
-textures _missle_type_to_texture(misslesTypes missle_type)
+/**
+ * Translates a missile type to its corresponding texture.
+ * 
+ * @return The texture associated with the given missile.
+ */
+textures _missle_type_to_texture(misslesTypes misile)
 {
-    switch (missle_type)
+    switch (misile)
     {
     case MISSLE_ROCKET:
         return TEXTURE_ROCKET;

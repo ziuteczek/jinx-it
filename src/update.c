@@ -65,7 +65,9 @@ void _cap_frame_rate(renderDataStruct *render_data, int fps)
         SDL_Delay(frameRate - (float)render_data->deltaTime);
     }
 }
-
+/**
+ * Checks if player has reached the destination point
+ */
 bool _click_travel_finished(playerStruct *player)
 {
     bool player_direction_x = player->x < player->move_click.direction.x;
@@ -88,7 +90,9 @@ bool _click_travel_finished(playerStruct *player)
 
 void _handle_player_mouse_moving(renderDataStruct *render_data);
 void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderDataStruct *render_data);
-
+/**
+ * Handles player movement to the clicked pixel
+ */
 void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
@@ -106,6 +110,9 @@ void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *rende
     }
 }
 
+/**
+ * Initializes player movement to the clicked pixel
+ */
 void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
@@ -137,10 +144,6 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
     {
         player->move_click.move_direction = MOVE_DIRECTION_NEG_X_Y;
     }
-    else
-    {
-        printf("dupa \n");
-    }
 
     player->move_click.player_path_length = sqrt(pow(player->move_click.distance.x, 2) + pow(player->move_click.distance.y, 2));
 
@@ -148,6 +151,10 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
 }
 
 bool _click_travel_finished(playerStruct *player);
+
+/**
+ * Updates player position when moving to the clicked pixel
+ */
 void _handle_player_mouse_moving(renderDataStruct *render_data)
 {
     playerStruct *player = &render_data->player;
@@ -256,7 +263,9 @@ bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL])
     }
     return false;
 }
-
+/**
+ * Returns the direction the player is walking based on the arrow keys pressed
+ */
 walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 {
     bool up = key_press[KEY_ARROW_UP] == KEY_STATE_DOWN;

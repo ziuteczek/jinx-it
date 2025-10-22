@@ -12,6 +12,7 @@
 #define CAP_FRAME_RATE false
 
 #define SQRT_2 1.41421356237309504880
+#define M_PI 3.14159265358979323846
 
 bool _any_key_pressed(keyPressState key_press[KEYS_TOTAL]);
 
@@ -310,13 +311,14 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 
 textures _missle_type_to_texture(misslesTypes missle_type);
 missleNode *getLastMissle(missleNode *missles);
+void _set_missile_pos(missleStruct *missile, float x, float y);
 
 /**
  * Creates a new missile and adds it to the linked list of missiles.
- * 
+ *
  * @param missles Pointer to the misslesStruct containing the linked list and count of missiles.
  */
-void new_missle(misslesStruct *missles)
+void new_missle(misslesStruct *missles, playerStruct *player)
 {
     missleStruct *new_missle;
     if (missles->count == 0)
@@ -338,15 +340,51 @@ void new_missle(misslesStruct *missles)
     misslesTypes missle_type = (misslesTypes)SDL_rand(MISSLES_TOTAL);
     new_missle->texture = _missle_type_to_texture(missle_type);
 
-    new_missle->pos.x = SDL_rand(BASIC_WIDTH);
-    new_missle->pos.y = BASIC_HEIGHT;
+    _set_missile_pos(new_missle, player->x, player->y);
 
-    new_missle->destination.x = new_missle->pos.x;
-    new_missle->destination.y = 0;
+    // new_missle->pos.x = SDL_rand(BASIC_WIDTH);
+    // new_missle->pos.y = BASIC_HEIGHT;
+
+    // new_missle->destination.x = new_missle->pos.x;
+    // new_missle->destination.y = 0;
 
     new_missle->speed = 50;
 
     missles->count++;
+}
+
+void _set_missile_pos(missleStruct *missile, float player_x, float player_y)
+{
+    // Generating starting point
+    int startingPosSeed = SDL_rand(BASIC_WIDTH /* * 2 + BASIC_HEIGHT * 2*/);
+
+    if (startingPosSeed < BASIC_WIDTH)
+    {
+        // Missile starting from bottom
+        missile->pos.y = BASIC_HEIGHT;
+        missile->pos.x = startingPosSeed;
+
+        missile->angle = atan2((double)player_y, (double)player_x - (double)startingPosSeed) * (180.0 / M_PI);
+        printf("%f", missile->angle);
+    }
+    else if (startingPosSeed < BASIC_WIDTH * 2)
+    {
+        // Missile starting from top
+        missile->pos.y = 0;
+        missile->pos.x = startingPosSeed - BASIC_WIDTH;
+    }
+    else if (startingPosSeed < BASIC_WIDTH * 2 + BASIC_HEIGHT)
+    {
+        // Missile starting from left
+        missile->pos.y = startingPosSeed - BASIC_WIDTH * 2;
+        missile->pos.x = 0;
+    }
+    else if (startingPosSeed < BASIC_WIDTH * 2 + BASIC_HEIGHT * 2)
+    {
+        // Missile starting from right
+        missile->pos.y = startingPosSeed - BASIC_WIDTH * 2 - BASIC_HEIGHT;
+        missile->pos.x = BASIC_WIDTH;
+    }
 }
 
 /**
@@ -383,7 +421,7 @@ void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
 
 /**
  * Updates all data of the missiles
- * 
+ *
  * @param render_data Pointer to the renderDataStruct
  */
 void update_missles(renderDataStruct *render_data)
@@ -401,7 +439,7 @@ void update_missles(renderDataStruct *render_data)
         gameTexture missle_texture = render_data->textures[current_missle->texture];
         bool missile_out_of_range = current_missle->pos.y < 0 - missle_texture.h;
 
-        //Destroying missle
+        // Destroying missle
         if (missile_out_of_range)
         {
             missleNode *to_destroy = current_missle_node;
@@ -423,7 +461,7 @@ void update_missles(renderDataStruct *render_data)
 }
 /**
  * Returns the last node in the linked list of missiles.
- * 
+ *
  * @return Pointer to the last missile node, or NULL if the list is empty.
  */
 missleNode *getLastMissle(missleNode *missles)
@@ -443,7 +481,7 @@ missleNode *getLastMissle(missleNode *missles)
 
 /**
  * Translates a missile type to its corresponding texture.
- * 
+ *
  * @return The texture associated with the given missile.
  */
 textures _missle_type_to_texture(misslesTypes misile)

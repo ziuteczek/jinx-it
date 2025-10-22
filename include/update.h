@@ -5,6 +5,7 @@
 
 #include "engine.h"
 #include "missile.h"
+#include "game.h"
 
 typedef enum walkingDirection
 {
@@ -22,7 +23,7 @@ typedef enum walkingDirection
 void update(inputDataStruct *input_data, struct renderDataStruct *renderData);
 
 // Missles logic
-void new_missle(misslesStruct *missles_data);
+void new_missle(misslesStruct *missles, playerStruct *player);
 void destroy_all_missles(missleNode **missle_head);
 void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node);
 #endif

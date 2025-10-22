@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
   inputDataStruct input_data;
 
-  new_missle(&render_data.missles);
+  new_missle(&render_data.missles, &render_data.player);
 
   while (!input_data.exit)
   {

@@ -42,7 +42,11 @@ void _draw_missle(renderDataStruct *render_data)
         render_target.x = missle->pos.x * render_data->screenSizeRatio;
         render_target.y = missle->pos.y * render_data->screenSizeRatio;
 
-        SDL_RenderTexture(render_data->renderer, missle_texture->data, NULL, &render_target);
+        SDL_FPoint missileCenter;
+        missileCenter.x = render_data->textures[missle->texture].w / 2.0;
+        missileCenter.y = render_data->textures[missle->texture].h / 2.0;
+
+        SDL_RenderTextureRotated(render_data->renderer, missle_texture->data, NULL, &render_target, 0.0, &missileCenter, SDL_FLIP_NONE);
 
         current = current->next;
     }
@@ -91,8 +95,8 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
     render_data->renderer = renderer;
     render_data->window = window;
 
-    render_data->player.x = 0;
-    render_data->player.y = 0;
+    render_data->player.x = 150;
+    render_data->player.y = 10;
     render_data->deltaTime = 0;
     render_data->renderTime = 0;
 

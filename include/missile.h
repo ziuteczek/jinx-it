@@ -28,6 +28,9 @@ typedef struct missleStruct
     int speed;
     float angle;
 
+    double pixels_per_ms_x;
+    double pixels_per_ms_y;
+
     textures texture;
 } missleStruct;
 

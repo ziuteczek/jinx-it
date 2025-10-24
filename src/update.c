@@ -311,7 +311,7 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 
 textures _missle_type_to_texture(misslesTypes missle_type);
 missleNode *getLastMissle(missleNode *missles);
-void _set_missile_pos(missleStruct *missile, float x, float y);
+void _set_missile_direction(missleStruct *missile, playerStruct *player);
 
 /**
  * Creates a new missile and adds it to the linked list of missiles.
@@ -340,20 +340,14 @@ void new_missle(misslesStruct *missles, playerStruct *player)
     misslesTypes missle_type = (misslesTypes)SDL_rand(MISSLES_TOTAL);
     new_missle->texture = _missle_type_to_texture(missle_type);
 
-    _set_missile_pos(new_missle, player->x, player->y);
+    new_missle->speed = 60;
 
-    // new_missle->pos.x = SDL_rand(BASIC_WIDTH);
-    // new_missle->pos.y = BASIC_HEIGHT;
-
-    // new_missle->destination.x = new_missle->pos.x;
-    // new_missle->destination.y = 0;
-
-    new_missle->speed = 50;
+    _set_missile_direction(new_missle, player);
 
     missles->count++;
 }
 
-void _set_missile_pos(missleStruct *missile, float player_x, float player_y)
+void _set_missile_direction(missleStruct *missile, playerStruct *player)
 {
     // Generating starting point
     int startingPosSeed = SDL_rand(BASIC_WIDTH /* * 2 + BASIC_HEIGHT * 2*/);
@@ -363,9 +357,6 @@ void _set_missile_pos(missleStruct *missile, float player_x, float player_y)
         // Missile starting from bottom
         missile->pos.y = BASIC_HEIGHT;
         missile->pos.x = startingPosSeed;
-
-        missile->angle = atan2((double)player_y, (double)player_x - (double)startingPosSeed) * (180.0 / M_PI);
-        printf("%f", missile->angle);
     }
     else if (startingPosSeed < BASIC_WIDTH * 2)
     {
@@ -385,6 +376,18 @@ void _set_missile_pos(missleStruct *missile, float player_x, float player_y)
         missile->pos.y = startingPosSeed - BASIC_WIDTH * 2 - BASIC_HEIGHT;
         missile->pos.x = BASIC_WIDTH;
     }
+
+    double distance_x = player->x - missile->pos.x;
+    double distance_y = player->y - missile->pos.y;
+
+    double distance_to_player = sqrtf(powf(distance_x, 2) + powf(distance_y, 2));
+
+    const double missile_speed_ms = missile->speed * 0.001f;
+
+    double part_of_distance_traveled = missile_speed_ms / distance_to_player;
+
+    missile->pixels_per_ms_x = distance_x * part_of_distance_traveled;
+    missile->pixels_per_ms_y = distance_y * part_of_distance_traveled;
 }
 
 /**
@@ -434,7 +437,8 @@ void update_missles(renderDataStruct *render_data)
         missleStruct *current_missle = &current_missle_node->data;
         const float speed_ms = current_missle->speed / 1000.0f;
 
-        current_missle->pos.y -= render_data->deltaTime * speed_ms;
+        current_missle->pos.x += current_missle->pixels_per_ms_x * render_data->deltaTime;
+        current_missle->pos.y += current_missle->pixels_per_ms_y * render_data->deltaTime;
 
         gameTexture missle_texture = render_data->textures[current_missle->texture];
         bool missile_out_of_range = current_missle->pos.y < 0 - missle_texture.h;

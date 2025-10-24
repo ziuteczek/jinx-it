@@ -424,6 +424,12 @@ void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
     free(to_destroy_node);
 }
 
+bool is_out_of_screen(SDL_FRect obj)
+{
+    float max_padding = sqrtf(powf(obj.h, 2.0f) + powf(obj.w, 2.0f));
+    return obj.y + max_padding < 0 || obj.y - max_padding > BASIC_HEIGHT || obj.x + max_padding < 0 || obj.x - max_padding > BASIC_WIDTH;
+}
+
 /**
  * Updates all data of the missiles
  *
@@ -434,6 +440,8 @@ void update_missles(renderDataStruct *render_data)
     missleNode *current_missle_node = render_data->missles.data;
     missleNode *prev_missile_node = NULL;
 
+    int destroyed_missiles = 0;
+
     while (current_missle_node != NULL)
     {
         missleStruct *current_missle = &current_missle_node->data;
@@ -443,7 +451,9 @@ void update_missles(renderDataStruct *render_data)
         current_missle->pos.y += current_missle->pixels_per_ms_y * render_data->deltaTime;
 
         gameTexture missle_texture = render_data->textures[current_missle->texture];
-        bool missile_out_of_range = current_missle->pos.y < 0 - missle_texture.h;
+
+        SDL_FRect missile_obj = {current_missle->pos.x, current_missle->pos.y, missle_texture.w, missle_texture.h};
+        bool missile_out_of_range = is_out_of_screen(missile_obj);
 
         // Destroying missle
         if (missile_out_of_range)
@@ -452,6 +462,7 @@ void update_missles(renderDataStruct *render_data)
             current_missle_node = current_missle_node->next;
 
             destroy_missle(prev_missile_node, to_destroy);
+            render_data->missles.count--;
         }
 
         if (missile_out_of_range && prev_missile_node == NULL)
@@ -463,6 +474,12 @@ void update_missles(renderDataStruct *render_data)
             prev_missile_node = current_missle_node;
             current_missle_node = current_missle_node->next;
         }
+    }
+
+    if (render_data->missles.count == 0)
+    {
+        printf("%d \n", render_data->missles.count);
+        new_missle(&render_data->missles, &render_data->player);
     }
 }
 /**

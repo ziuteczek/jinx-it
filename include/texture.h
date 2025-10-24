@@ -7,6 +7,7 @@ typedef enum textures
 {
     TEXTURE_MAP,
     TEXTURE_PLAYER,
+    TEXTURE_ROCKET,
     TEXTURES_TOTAL,
 } textures;
 

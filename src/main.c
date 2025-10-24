@@ -2,11 +2,13 @@
 #include <SDL3_image/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "debug.h"
 #include "engine.h"
 #include "render.h"
 #include "update.h"
+#include "config.h"
 
 int main(int argc, char **argv)
 {
@@ -40,13 +42,14 @@ int main(int argc, char **argv)
 
   if (!render_data_defaulting_succes)
   {
-    printf("kicha \n");
     quit(window, renderer);
     debug("Setting render_data default values didn't succed");
     return 3;
   }
 
   inputDataStruct input_data;
+
+  new_missle(&render_data.missles, &render_data.player);
 
   while (!input_data.exit)
   {
@@ -56,6 +59,8 @@ int main(int argc, char **argv)
   }
 
   free_textures(&render_data);
+  destroy_all_missles(&render_data.missles.data);
+  free(render_data.missles.data);
 
   quit(window, renderer);
   return 0;

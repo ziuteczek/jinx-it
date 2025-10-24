@@ -5,10 +5,10 @@
 #include "debug.h"
 #include "render.h"
 #include "engine.h"
-#include "config.h"
 
 void _draw_player(renderDataStruct *render_data);
 void _draw_map(renderDataStruct *render_data);
+void _draw_missle(renderDataStruct *render_data);
 
 void render(renderDataStruct *render_data)
 {
@@ -23,7 +23,33 @@ void render(renderDataStruct *render_data)
     // Drawing player
     _draw_player(render_data);
 
+    _draw_missle(render_data);
+
     SDL_RenderPresent(renderer);
+}
+
+void _draw_missle(renderDataStruct *render_data)
+{
+    missleNode *current = render_data->missles.data;
+    while (current != NULL)
+    {
+        missleStruct *missle = &current->data;
+        gameTexture *missle_texture = &render_data->textures[missle->texture];
+
+        SDL_FRect render_target;
+        render_target.h = missle_texture->h * render_data->screenSizeRatio;
+        render_target.w = missle_texture->w * render_data->screenSizeRatio;
+        render_target.x = missle->pos.x * render_data->screenSizeRatio;
+        render_target.y = missle->pos.y * render_data->screenSizeRatio;
+
+        SDL_FPoint missileCenter;
+        missileCenter.x = render_data->textures[missle->texture].w / 2.0;
+        missileCenter.y = render_data->textures[missle->texture].h / 2.0;
+
+        SDL_RenderTextureRotated(render_data->renderer, missle_texture->data, NULL, &render_target, missle->angle, &missileCenter, SDL_FLIP_NONE);
+
+        current = current->next;
+    }
 }
 
 void _draw_map(renderDataStruct *render_data)
@@ -35,7 +61,6 @@ void _draw_map(renderDataStruct *render_data)
 
     map_width *= screen_size_ratio;
     map_height *= screen_size_ratio;
-    printf("%f \n", screen_size_ratio);
 
     SDL_FRect map_render_pos = {0, 0, map_width, map_height};
 
@@ -70,8 +95,8 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
     render_data->renderer = renderer;
     render_data->window = window;
 
-    render_data->player.x = 0;
-    render_data->player.y = 0;
+    render_data->player.x = 150;
+    render_data->player.y = 10;
     render_data->deltaTime = 0;
     render_data->renderTime = 0;
 
@@ -89,8 +114,9 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
 
     render_data->screenSizeRatio = get_screen_size_ratio(render_data->width);
 
-    render_data->textures[TEXTURE_MAP] = get_texture_from_path(render_data->renderer, "../assets/map.png");
     render_data->textures[TEXTURE_PLAYER] = get_texture_from_path(render_data->renderer, "../assets/player.png");
+    render_data->textures[TEXTURE_MAP] = get_texture_from_path(render_data->renderer, "../assets/map.png");
+    render_data->textures[TEXTURE_ROCKET] = get_texture_from_path(render_data->renderer, "../assets/rocket.png");
 
     for (int i = 0; i < TEXTURES_TOTAL; i++)
     {
@@ -100,6 +126,10 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
             return false;
         }
     }
+
+    render_data->missles.count = 0;
+    render_data->missles.data = NULL;
+    render_data->missles.last_missle_added = 0;
 
     return true;
 }

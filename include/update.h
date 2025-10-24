@@ -4,7 +4,8 @@
 #include <SDL3/SDL.h>
 
 #include "engine.h"
-#include "render.h"
+#include "missile.h"
+#include "game.h"
 
 typedef enum walkingDirection
 {
@@ -19,5 +20,10 @@ typedef enum walkingDirection
     DIRECTION_BOTTOM_LEFT,
 } walkingDirection;
 
-void update(inputDataStruct *input_data, renderDataStruct *renderData);
+void update(inputDataStruct *input_data, struct renderDataStruct *renderData);
+
+// Missles logic
+void new_missle(misslesStruct *missles, playerStruct *player);
+void destroy_all_missles(missleNode **missle_head);
+void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node);
 #endif

@@ -41,6 +41,8 @@ bool launch(SDL_Window **window, SDL_Renderer **renderer)
 
     debug("SDL launched succesfully");
 
+    SDL_srand(0);
+
     return true;
 }
 
@@ -73,7 +75,7 @@ void _handle_event(SDL_Event event, inputDataStruct *input_data)
     {
         bool isKeyDown = SDL_EVENT_KEY_DOWN == event.type;
         _handle_key_click(isKeyDown, event.key.key, input_data->key_press);
-        debug("Key pressed: %s", SDL_GetKeyName(event.key.key));
+        // debug("Key pressed: %s", SDL_GetKeyName(event.key.key));
         break;
     }
     case SDL_EVENT_MOUSE_BUTTON_DOWN:

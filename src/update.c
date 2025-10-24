@@ -350,7 +350,7 @@ void new_missle(misslesStruct *missles, playerStruct *player)
 void _set_missile_direction(missleStruct *missile, playerStruct *player)
 {
     // Generating starting point
-    int startingPosSeed = SDL_rand(BASIC_WIDTH /* * 2 + BASIC_HEIGHT * 2*/);
+    int startingPosSeed = SDL_rand(BASIC_HEIGHT * 2 + BASIC_HEIGHT * 2);
 
     if (startingPosSeed < BASIC_WIDTH)
     {
@@ -370,21 +370,21 @@ void _set_missile_direction(missleStruct *missile, playerStruct *player)
         missile->pos.y = startingPosSeed - BASIC_WIDTH * 2;
         missile->pos.x = 0;
     }
-    else if (startingPosSeed < BASIC_WIDTH * 2 + BASIC_HEIGHT * 2)
+    else
     {
         // Missile starting from right
         missile->pos.y = startingPosSeed - BASIC_WIDTH * 2 - BASIC_HEIGHT;
         missile->pos.x = BASIC_WIDTH;
     }
 
-    double distance_x = player->x - missile->pos.x;
-    double distance_y = player->y - missile->pos.y;
+    float distance_x = player->x - missile->pos.x;
+    float distance_y = player->y - missile->pos.y;
 
-    double distance_to_player = sqrtf(powf(distance_x, 2) + powf(distance_y, 2));
+    float distance_to_player = sqrtf(powf(distance_x, 2) + powf(distance_y, 2));
 
-    const double missile_speed_ms = missile->speed * 0.001f;
+    const float missile_speed_ms = missile->speed * 0.001f;
 
-    double part_of_distance_traveled = missile_speed_ms / distance_to_player;
+    float part_of_distance_traveled = missile_speed_ms / distance_to_player;
 
     missile->pixels_per_ms_x = distance_x * part_of_distance_traveled;
     missile->pixels_per_ms_y = distance_y * part_of_distance_traveled;

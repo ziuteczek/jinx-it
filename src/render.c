@@ -46,7 +46,7 @@ void _draw_missle(renderDataStruct *render_data)
         missileCenter.x = render_data->textures[missle->texture].w / 2.0;
         missileCenter.y = render_data->textures[missle->texture].h / 2.0;
 
-        SDL_RenderTextureRotated(render_data->renderer, missle_texture->data, NULL, &render_target, 0.0, &missileCenter, SDL_FLIP_NONE);
+        SDL_RenderTextureRotated(render_data->renderer, missle_texture->data, NULL, &render_target, missle->angle, &missileCenter, SDL_FLIP_NONE);
 
         current = current->next;
     }

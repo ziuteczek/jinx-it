@@ -388,6 +388,8 @@ void _set_missile_direction(missleStruct *missile, playerStruct *player)
 
     missile->pixels_per_ms_x = distance_x * part_of_distance_traveled;
     missile->pixels_per_ms_y = distance_y * part_of_distance_traveled;
+
+    missile->angle = SDL_atan2(missile->pixels_per_ms_y, missile->pixels_per_ms_x) * (180 / SDL_PI_F) + 90.0f;
 }
 
 /**

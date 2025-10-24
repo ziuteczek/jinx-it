@@ -8,7 +8,7 @@
 
 void _draw_player(renderDataStruct *render_data);
 void _draw_map(renderDataStruct *render_data);
-void _draw_missle(renderDataStruct *render_data);
+void _draw_missile(renderDataStruct *render_data);
 
 void render(renderDataStruct *render_data)
 {
@@ -23,30 +23,30 @@ void render(renderDataStruct *render_data)
     // Drawing player
     _draw_player(render_data);
 
-    _draw_missle(render_data);
+    _draw_missile(render_data);
 
     SDL_RenderPresent(renderer);
 }
 
-void _draw_missle(renderDataStruct *render_data)
+void _draw_missile(renderDataStruct *render_data)
 {
-    missleNode *current = render_data->missles.data;
+    missileNode *current = render_data->missiles.data;
     while (current != NULL)
     {
-        missleStruct *missle = &current->data;
-        gameTexture *missle_texture = &render_data->textures[missle->texture];
+        missileStruct *missile = &current->data;
+        gameTexture *missile_texture = &render_data->textures[missile->texture];
 
         SDL_FRect render_target;
-        render_target.h = missle_texture->h * render_data->screenSizeRatio;
-        render_target.w = missle_texture->w * render_data->screenSizeRatio;
-        render_target.x = missle->pos.x * render_data->screenSizeRatio;
-        render_target.y = missle->pos.y * render_data->screenSizeRatio;
+        render_target.h = missile_texture->h * render_data->screenSizeRatio;
+        render_target.w = missile_texture->w * render_data->screenSizeRatio;
+        render_target.x = missile->pos.x * render_data->screenSizeRatio;
+        render_target.y = missile->pos.y * render_data->screenSizeRatio;
 
         SDL_FPoint missileCenter;
-        missileCenter.x = render_data->textures[missle->texture].w / 2.0;
-        missileCenter.y = render_data->textures[missle->texture].h / 2.0;
+        missileCenter.x = render_data->textures[missile->texture].w / 2.0;
+        missileCenter.y = render_data->textures[missile->texture].h / 2.0;
 
-        SDL_RenderTextureRotated(render_data->renderer, missle_texture->data, NULL, &render_target, missle->angle, &missileCenter, SDL_FLIP_NONE);
+        SDL_RenderTextureRotated(render_data->renderer, missile_texture->data, NULL, &render_target, missile->angle, &missileCenter, SDL_FLIP_NONE);
 
         current = current->next;
     }
@@ -104,11 +104,11 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
 
     render_data->player.move_click.following_mouse_click = false;
 
-    bool reading_window_size_succes = SDL_GetWindowSize(window, &render_data->width, &render_data->height);
+    bool reading_window_size_success = SDL_GetWindowSize(window, &render_data->width, &render_data->height);
 
-    if (!reading_window_size_succes)
+    if (!reading_window_size_success)
     {
-        debug("Unsuccesfull while reading window size");
+        debug("Unsuccessful while reading window size");
         return false;
     }
 
@@ -122,14 +122,14 @@ bool set_default_render_data(renderDataStruct *render_data, SDL_Window *window, 
     {
         if (!render_data->textures[i].success)
         {
-            debug("Unsuccesfull while creating texture %d", i);
+            debug("Unsuccessful while creating texture %d", i);
             return false;
         }
     }
 
-    render_data->missles.count = 0;
-    render_data->missles.data = NULL;
-    render_data->missles.last_missle_added = 0;
+    render_data->missiles.count = 0;
+    render_data->missiles.data = NULL;
+    render_data->missiles.last_missile_added = 0;
 
     return true;
 }

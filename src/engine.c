@@ -9,12 +9,12 @@
 #include "render.h"
 /*
  * Initializes SDL, window and renderer
- * @returns true on succes, false on failure
+ * @returns true on success, false on failure
  */
 bool launch(SDL_Window **window, SDL_Renderer **renderer)
 {
-    bool sdlInitializationSucces = SDL_Init(SDL_INIT_VIDEO);
-    if (!sdlInitializationSucces)
+    bool sdlInitializationSuccess = SDL_Init(SDL_INIT_VIDEO);
+    if (!sdlInitializationSuccess)
     {
         debug("SDL initialization failed");
         debug("%s", SDL_GetError());
@@ -39,7 +39,7 @@ bool launch(SDL_Window **window, SDL_Renderer **renderer)
         return false;
     }
 
-    debug("SDL launched succesfully");
+    debug("SDL launched successfully");
 
     SDL_srand(0);
 

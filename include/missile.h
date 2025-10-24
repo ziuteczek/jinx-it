@@ -4,27 +4,27 @@
 #include <SDL3/SDL.h>
 #include "texture.h"
 
-typedef enum misslesTypes
+typedef enum missilesTypes
 {
-    MISSLE_ROCKET,
-    MISSLES_TOTAL
-} misslesTypes;
+    MISSILE_ROCKET,
+    MISSILES_TOTAL
+} missilesTypes;
 
 /**
- * Structure constaining information about a missle
+ * Structure constaining information about a missile
  * 
- * pos: Current position of the missle
- * destination: Target position of the missle
- * speed: Speed of the missle in px per second
- * angle: Angle of the missle in degrees
- * texture: Texture of the missle (see texture.h)
+ * pos: Current position of the missile
+ * destination: Target position of the missile
+ * speed: Speed of the missile in px per second
+ * angle: Angle of the missile in degrees
+ * texture: Texture of the missile (see texture.h)
  */
-typedef struct missleStruct
+typedef struct missileStruct
 {
     SDL_FPoint pos;
     SDL_FPoint destination;
 
-    // Speed of the missle in px per second
+    // Speed of the missile in px per second
     int speed;
     float angle;
 
@@ -32,30 +32,30 @@ typedef struct missleStruct
     double pixels_per_ms_y;
 
     textures texture;
-} missleStruct;
+} missileStruct;
 
 /**
- * A node in a linked list of missles
+ * A node in a linked list of missiles
  */
-typedef struct missleNode
+typedef struct missileNode
 {
-    missleStruct data;
-    struct missleNode *next;
-} missleNode;
+    missileStruct data;
+    struct missileNode *next;
+} missileNode;
 
 /**
  * Structure containing all information about missiles in the game
  * 
- * count: Number of missles in the list
- * last_missle_added: Time when the last missle was added (in milliseconds)
+ * count: Number of missiles in the list
+ * last_missile_added: Time when the last missile was added (in milliseconds)
  * data: Pointer to the first node in the list
  */
-typedef struct misslesStruct
+typedef struct missilesStruct
 {
     int count;
-    Uint64 last_missle_added;
+    Uint64 last_missile_added;
 
-    missleNode *data;
-} misslesStruct;
+    missileNode *data;
+} missilesStruct;
 
 #endif

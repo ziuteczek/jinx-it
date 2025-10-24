@@ -22,8 +22,8 @@ typedef enum walkingDirection
 
 void update(inputDataStruct *input_data, struct renderDataStruct *renderData);
 
-// Missles logic
-void new_missle(misslesStruct *missles, playerStruct *player);
-void destroy_all_missles(missleNode **missle_head);
-void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node);
+// Missiles logic
+void new_missile(missilesStruct *missiles, playerStruct *player);
+void destroy_all_missiles(missileNode **missile_head);
+void destroy_missile(missileNode *prev_node, missileNode *to_destroy_node);
 #endif

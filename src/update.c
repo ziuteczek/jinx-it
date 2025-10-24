@@ -23,7 +23,7 @@ void _frame_timing(renderDataStruct *render_data);
 void _cap_frame_rate(renderDataStruct *render_data, int fps);
 
 void _handle_scaling(inputDataStruct *input_data, renderDataStruct *render_data);
-void update_missles(renderDataStruct *render_data);
+void update_missiles(renderDataStruct *render_data);
 
 void update(inputDataStruct *input_data, renderDataStruct *render_data)
 {
@@ -43,7 +43,7 @@ void update(inputDataStruct *input_data, renderDataStruct *render_data)
     {
         _handle_key_press(input_data->key_press, render_data);
     }
-    update_missles(render_data);
+    update_missiles(render_data);
 }
 
 void _handle_scaling(inputDataStruct *input_data, renderDataStruct *render_data)
@@ -107,13 +107,13 @@ void _handle_mouse_movement(inputDataStruct *input_data, renderDataStruct *rende
 {
     playerStruct *player = &render_data->player;
 
-    // If player is currently marked as moving, uptdates his position
+    // If player is currently marked as moving, updates his position
     if (player->move_click.following_mouse_click)
     {
         _handle_player_mouse_moving(render_data);
     }
 
-    // Cheks if right mouse button was pressed, if so stats player movement to clicked pixel
+    // Checks if right mouse button was pressed, if so starts player movement to clicked pixel
     if (input_data->mouse_press[MOUSE_BUTTON_RIGHT] == MOUSE_STATE_DOWN)
     {
         _handle_player_mouse_start_movement(input_data, render_data);
@@ -130,11 +130,11 @@ void _handle_player_mouse_start_movement(inputDataStruct *input_data, renderData
     player->move_click.direction.x = input_data->mouse_pos.x - render_data->textures[TEXTURE_PLAYER].w / 2;
     player->move_click.direction.y = input_data->mouse_pos.y - render_data->textures[TEXTURE_PLAYER].h / 2;
 
-    // Distance bettwen player and designater pixel
+    // Distance between player and designated pixel
     player->move_click.distance.x = abs(player->move_click.direction.x - player->x);
     player->move_click.distance.y = abs(player->move_click.direction.y - player->y);
 
-    // Is the player going foward (increasing coordinates)
+    // Is the player going forward (increasing coordinates)
     bool player_direction_x = player->x < player->move_click.direction.x;
     bool player_direction_y = player->y < player->move_click.direction.y;
 
@@ -306,48 +306,48 @@ walkingDirection _get_walking_direction(keyPressState key_press[KEYS_TOTAL])
 }
 
 /**
- * Missle
+ * Missile
  */
 
-textures _missle_type_to_texture(misslesTypes missle_type);
-missleNode *getLastMissle(missleNode *missles);
-void _set_missile_direction(missleStruct *missile, playerStruct *player);
+textures _missile_type_to_texture(missilesTypes missile_type);
+missileNode *getLastMissile(missileNode *missiles);
+void _set_missile_direction(missileStruct *missile, playerStruct *player);
 
 /**
  * Creates a new missile and adds it to the linked list of missiles.
  *
- * @param missles Pointer to the misslesStruct containing the linked list and count of missiles.
+ * @param missiles Pointer to the missilesStruct containing the linked list and count of missiles.
  */
-void new_missle(misslesStruct *missles, playerStruct *player)
+void new_missile(missilesStruct *missiles, playerStruct *player)
 {
-    missleStruct *new_missle;
-    if (missles->count == 0)
+    missileStruct *new_missile;
+    if (missiles->count == 0)
     {
-        missles->data = malloc(sizeof(missleNode));
-        missles->data->next = NULL;
-        new_missle = &missles->data->data;
+        missiles->data = malloc(sizeof(missileNode));
+        missiles->data->next = NULL;
+        new_missile = &missiles->data->data;
     }
     else
     {
-        missleNode *last_missle;
-        last_missle = getLastMissle(missles->data);
-        last_missle->next = malloc(sizeof(missleNode));
-        missles->data->next = NULL;
+        missileNode *last_missile;
+        last_missile = getLastMissile(missiles->data);
+        last_missile->next = malloc(sizeof(missileNode));
+        missiles->data->next = NULL;
 
-        new_missle = &last_missle->next->data;
+        new_missile = &last_missile->next->data;
     }
 
-    misslesTypes missle_type = (misslesTypes)SDL_rand(MISSLES_TOTAL);
-    new_missle->texture = _missle_type_to_texture(missle_type);
+    missilesTypes missile_type = (missilesTypes)SDL_rand(MISSILES_TOTAL);
+    new_missile->texture = _missile_type_to_texture(missile_type);
 
-    new_missle->speed = 60;
+    new_missile->speed = 60;
 
-    _set_missile_direction(new_missle, player);
+    _set_missile_direction(new_missile, player);
 
-    missles->count++;
+    missiles->count++;
 }
 
-void _set_missile_direction(missleStruct *missile, playerStruct *player)
+void _set_missile_direction(missileStruct *missile, playerStruct *player)
 {
     // Generating starting point
     int startingPosSeed = SDL_rand(BASIC_HEIGHT * 2 + BASIC_HEIGHT * 2);
@@ -396,18 +396,18 @@ void _set_missile_direction(missleStruct *missile, playerStruct *player)
  * This function iterates through the linked list of missiles, freeing each node's memory.
  * After all nodes are freed, the head pointer is set to NULL to indicate the list is empty.
  *
- * @param missle_head Pointer to the head pointer of the missile linked list.
+ * @param missile_head Pointer to the head pointer of the missile linked list.
  */
-void destroy_all_missles(missleNode **missle_head)
+void destroy_all_missiles(missileNode **missile_head)
 {
-    missleNode *current = *missle_head;
+    missileNode *current = *missile_head;
     while (current != NULL)
     {
-        missleNode *next = current->next;
+        missileNode *next = current->next;
         free(current);
         current = next;
     }
-    *missle_head = NULL;
+    *missile_head = NULL;
 }
 /**
  * Destroys a missile node from the linked list.
@@ -415,7 +415,7 @@ void destroy_all_missles(missleNode **missle_head)
  * @param prev_node Pointer to the previous node in the linked list. If the node to be destroyed is the head, this should be NULL.
  * @param to_destroy_node Pointer to the node that needs to be destroyed.
  */
-void destroy_missle(missleNode *prev_node, missleNode *to_destroy_node)
+void destroy_missile(missileNode *prev_node, missileNode *to_destroy_node)
 {
     if (prev_node != NULL)
     {
@@ -435,51 +435,51 @@ bool is_out_of_screen(SDL_FRect obj)
  *
  * @param render_data Pointer to the renderDataStruct
  */
-void update_missles(renderDataStruct *render_data)
+void update_missiles(renderDataStruct *render_data)
 {
-    missleNode *current_missle_node = render_data->missles.data;
-    missleNode *prev_missile_node = NULL;
+    missileNode *current_missile_node = render_data->missiles.data;
+    missileNode *prev_missile_node = NULL;
 
     int destroyed_missiles = 0;
 
-    while (current_missle_node != NULL)
+    while (current_missile_node != NULL)
     {
-        missleStruct *current_missle = &current_missle_node->data;
-        const float speed_ms = current_missle->speed / 1000.0f;
+        missileStruct *current_missile = &current_missile_node->data;
+        const float speed_ms = current_missile->speed / 1000.0f;
 
-        current_missle->pos.x += current_missle->pixels_per_ms_x * render_data->deltaTime;
-        current_missle->pos.y += current_missle->pixels_per_ms_y * render_data->deltaTime;
+        current_missile->pos.x += current_missile->pixels_per_ms_x * render_data->deltaTime;
+        current_missile->pos.y += current_missile->pixels_per_ms_y * render_data->deltaTime;
 
-        gameTexture missle_texture = render_data->textures[current_missle->texture];
+        gameTexture missile_texture = render_data->textures[current_missile->texture];
 
-        SDL_FRect missile_obj = {current_missle->pos.x, current_missle->pos.y, missle_texture.w, missle_texture.h};
+        SDL_FRect missile_obj = {current_missile->pos.x, current_missile->pos.y, missile_texture.w, missile_texture.h};
         bool missile_out_of_range = is_out_of_screen(missile_obj);
 
-        // Destroying missle
+        // Destroying missile
         if (missile_out_of_range)
         {
-            missleNode *to_destroy = current_missle_node;
-            current_missle_node = current_missle_node->next;
+            missileNode *to_destroy = current_missile_node;
+            current_missile_node = current_missile_node->next;
 
-            destroy_missle(prev_missile_node, to_destroy);
-            render_data->missles.count--;
+            destroy_missile(prev_missile_node, to_destroy);
+            render_data->missiles.count--;
         }
 
         if (missile_out_of_range && prev_missile_node == NULL)
         {
-            render_data->missles.data = current_missle_node;
+            render_data->missiles.data = current_missile_node;
         }
         else if (!missile_out_of_range)
         {
-            prev_missile_node = current_missle_node;
-            current_missle_node = current_missle_node->next;
+            prev_missile_node = current_missile_node;
+            current_missile_node = current_missile_node->next;
         }
     }
 
-    if (render_data->missles.count == 0)
+    if (render_data->missiles.count == 0)
     {
-        printf("%d \n", render_data->missles.count);
-        new_missle(&render_data->missles, &render_data->player);
+        printf("%d \n", render_data->missiles.count);
+        new_missile(&render_data->missiles, &render_data->player);
     }
 }
 /**
@@ -487,14 +487,14 @@ void update_missles(renderDataStruct *render_data)
  *
  * @return Pointer to the last missile node, or NULL if the list is empty.
  */
-missleNode *getLastMissle(missleNode *missles)
+missileNode *getLastMissile(missileNode *missiles)
 {
-    if (missles == NULL)
+    if (missiles == NULL)
     {
         return NULL;
     }
 
-    missleNode *current = missles;
+    missileNode *current = missiles;
     while (current->next != NULL)
     {
         current = current->next;
@@ -507,11 +507,11 @@ missleNode *getLastMissle(missleNode *missles)
  *
  * @return The texture associated with the given missile.
  */
-textures _missle_type_to_texture(misslesTypes misile)
+textures _missile_type_to_texture(missilesTypes missile)
 {
-    switch (misile)
+    switch (missile)
     {
-    case MISSLE_ROCKET:
+    case MISSILE_ROCKET:
         return TEXTURE_ROCKET;
     }
 }

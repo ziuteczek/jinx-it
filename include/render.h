@@ -45,7 +45,7 @@ typedef struct renderDataStruct
 
     gameTexture textures[TEXTURES_TOTAL];
 
-    misslesStruct missles;
+    missilesStruct missiles;
 } renderDataStruct;
 
 void render(renderDataStruct *renderData);
